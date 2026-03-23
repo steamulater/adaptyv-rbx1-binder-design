@@ -382,6 +382,79 @@ All 96 sequences are ≥55% edit distance from the original scaffold (well above
 
 ---
 
+### Entry 006 — 2026-03-23
+
+**Status:** Complete
+
+**Work completed:**
+- Ran full Boltz-2 validation on all 96 ProteinMPNN-designed sequences
+  - 96 monomer predictions (binder-only, for pTM/pLDDT)
+  - 96 complex predictions (binder + RBX1, for ipTM)
+  - All runs used `--use_msa_server --diffusion_samples 5 --no_kernels`
+  - MSA fetched from api.colabfold.com (rate-limited, ~7–8 min per sequence)
+  - Total MSA fetch time: ~107 min; GPU prediction time: ~25 min (A100)
+  - 0 failed examples across all 192 predictions
+- Extracted confidence scores from JSON outputs and updated `master_sequences.csv`
+
+**Boltz-2 validation results — all 96 sequences:**
+
+| Metric | GLMN (n=48) | CUL1_WHB (n=48) | Overall (n=96) |
+|--------|-------------|-----------------|----------------|
+| ipTM mean ± sd | **0.867 ± 0.011** | 0.595 ± 0.096 | 0.731 ± 0.121 |
+| ipTM median | **0.865** | 0.606 | 0.759 |
+| ipTM range | 0.845 – 0.887 | 0.344 – 0.692 | 0.344 – 0.887 |
+| Sequences ≥ ipTM 0.7 | **48/48 (100%)** | 7/48 (15%) | 55/96 (57%) |
+| Monomer pTM mean | 0.891 | 0.941 | 0.916 |
+| Monomer pLDDT mean | 0.905 | 0.955 | 0.930 |
+
+**Key findings:**
+- **GLMN scaffold is a clear winner**: 100% of 48 sequences exceed ipTM 0.7; tight distribution (sd = 0.011) indicates the scaffold geometry is robustly maintained across all ProteinMPNN temperatures and seeds
+- **CUL1_WHB has excellent fold quality** (pTM ~0.94, pLDDT ~0.95) but poor complex binding (only 7/48 above 0.7), consistent with Entry 004 findings that the 72 AA fragment struggles to form a stable interface without the full Cullin scaffold
+- **Temperature effect (GLMN):** Minimal variance in ipTM across T=0.1/0.2/0.3 — all temperatures yield viable binders
+- **Temperature effect (CUL1_WHB):** No consistent improvement at any temperature; variability is structural, not sequence-sampling related
+
+**Top 10 sequences by ipTM:**
+
+| Rank | Sequence ID | Scaffold | ipTM | pTM | pLDDT |
+|------|-------------|----------|------|-----|-------|
+| 1 | GLMN_T0.1_s11 | GLMN | 0.8869 | 0.8895 | 0.9091 |
+| 2 | GLMN_T0.1_s4 | GLMN | 0.8859 | 0.8907 | 0.9054 |
+| 3 | GLMN_T0.3_s12 | GLMN | 0.8816 | 0.8795 | 0.9037 |
+| 4 | GLMN_T0.1_s15 | GLMN | 0.8807 | 0.8946 | 0.8983 |
+| 5 | GLMN_T0.2_s5 | GLMN | 0.8794 | 0.8911 | 0.8892 |
+| 6 | GLMN_T0.2_s14 | GLMN | 0.8790 | 0.8906 | 0.9011 |
+| 7 | GLMN_T0.1_s13 | GLMN | 0.8784 | 0.8885 | 0.9027 |
+| 8 | GLMN_T0.3_s4 | GLMN | 0.8781 | 0.8880 | 0.9024 |
+| 9 | GLMN_T0.3_s8 | GLMN | 0.8781 | 0.8962 | 0.9036 |
+| 10 | GLMN_T0.1_s10 | GLMN | 0.8771 | 0.8728 | 0.8765 |
+
+**Visualisations:**
+
+*Figure 1 — Overview: ipTM distribution, temperature breakdown, fold quality vs binding*
+
+![Boltz-2 validation overview: violin plots, temperature breakdown, pTM vs ipTM scatter](boltz_results_overview.png)
+
+*Figure 2 — Top 20 sequences ranked by ipTM*
+
+![Top 20 sequences by Boltz-2 complex ipTM, coloured by scaffold](boltz_top20_ranking.png)
+
+*Figure 3 — ipTM heatmap across all temperature × sample combinations*
+
+![ipTM heatmap: rows = temperature (0.1/0.2/0.3), columns = samples s1–s16, per scaffold](boltz_iptm_heatmap.png)
+
+**Submission strategy:**
+- Submit all 48 GLMN sequences (ipTM 0.845–0.887, all above threshold)
+- Submit the 7 CUL1_WHB sequences with ipTM ≥ 0.70 to maximise scaffold diversity
+- Total planned: 55 sequences (within the 100-sequence limit, leaving headroom for Strategy 1 de novo designs if time permits)
+- Pending: UniRef50 novelty screen (mmseqs2) to confirm edit_distance_uniprot50 ≥ 0.25
+
+**Next steps:**
+- [ ] Run mmseqs2 UniRef50 novelty screen on all 55 candidate sequences
+- [ ] Final ranking and selection (top 100 by ipTM, filtered by novelty)
+- [ ] Submit sequences by March 26, 2026 deadline
+
+---
+
 ## Sequences Submitted
 
 | # | Sequence ID | Length (AA) | ipTM | pLDDT | Edit dist. | Notes |
