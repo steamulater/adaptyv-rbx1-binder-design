@@ -331,6 +331,57 @@ All sequences verified correct. Boltz-1 YAML inputs confirmed ready to submit.
 
 ---
 
+### Entry 005 — 2026-03-23
+
+**Status:** Complete
+
+**Work completed:**
+- Ran ProteinMPNN on both Boltz-validated scaffolds (chain A designed, chain B RBX1 fixed as context)
+- Fixed chain assignment bug (initially designed RBX1 instead of binder — corrected)
+- Generated 48 sequences per scaffold × 3 temperatures (T=0.1, 0.2, 0.3) × 16 samples = **96 total binder sequences**
+- Computed edit distance to original scaffold sequences as preliminary novelty check
+- Created master tracking CSV (`master_sequences.csv`) with all sequence metadata and placeholder columns for future metrics
+- Generated 192 Boltz validation YAMLs (96 monomer + 96 complex) in `boltz_validation/yamls/`
+
+**ProteinMPNN settings:**
+- Model: vanilla (v_48_020)
+- Fixed chain: B (RBX1, 108 AA) — provides interface context
+- Designed chain: A (binder scaffold)
+- Temperatures: 0.1 (conservative), 0.2 (balanced), 0.3 (diverse)
+- 16 sequences per temperature per scaffold
+- Seed: 37
+
+**Sequence statistics:**
+
+| Scaffold | N | Length | MPNN score (mean) | MPNN score (range) |
+|----------|---|--------|-------------------|--------------------|
+| GLMN (Strategy 2a) | 48 | 247 AA | 0.9828 | 0.899–1.088 |
+| CUL1_WHB (Strategy 2b) | 48 | 72 AA | 1.0266 | 0.948–1.163 |
+
+**Preliminary novelty check (edit distance to original scaffold):**
+
+| Scaffold | Temp | Edit dist range | Mean | Passes >25% |
+|----------|------|-----------------|------|-------------|
+| GLMN | 0.1 | 0.575–0.615 | 0.599 | 16/16 |
+| GLMN | 0.2 | 0.571–0.660 | 0.600 | 16/16 |
+| GLMN | 0.3 | 0.587–0.627 | 0.607 | 16/16 |
+| CUL1_WHB | 0.1 | 0.556–0.639 | 0.612 | 16/16 |
+| CUL1_WHB | 0.2 | 0.556–0.653 | 0.605 | 16/16 |
+| CUL1_WHB | 0.3 | 0.556–0.681 | 0.632 | 16/16 |
+
+All 96 sequences are ≥55% edit distance from the original scaffold (well above the 25% threshold). Full UniRef50 screening via mmseqs2 required before final submission — recorded as `edit_distance_uniprot50 = pending` in master CSV.
+
+**Master CSV columns:** `seq_id`, `scaffold`, `source_pdb`, `strategy`, `temperature`, `sample`, `length`, `mpnn_score`, `edit_distance_to_original_scaffold`, `identity_to_original_scaffold`, `edit_distance_uniprot50`, `boltz_monomer_ptm`, `boltz_monomer_plddt`, `boltz_complex_iptm`, `boltz_complex_ptm`, `boltz_complex_plddt`, `passes_novelty`, `status`, `notes`, `sequence`
+
+**Next steps:**
+- [ ] Run 192 Boltz validation jobs on Colab (96 monomer + 96 complex)
+- [ ] Update master CSV with Boltz metrics
+- [ ] Run full UniRef50 novelty screen (mmseqs2) before submission
+- [ ] Select top sequences by ipTM for final submission
+- [ ] Set up RFdiffusion Colab run (Strategy 1 — de novo backbones)
+
+---
+
 ## Sequences Submitted
 
 | # | Sequence ID | Length (AA) | ipTM | pLDDT | Edit dist. | Notes |
