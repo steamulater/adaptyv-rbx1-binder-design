@@ -1,0 +1,18 @@
+# Boltz-1 prediction: CUL1 WHB fragment + RBX1 complex
+# Chain A: CUL1 residues 705-776 (72 AA) — WHB domain (PDB 1LDJ, chain A)
+# Chain B: RBX1 full length (108 AA, UniProt P62877)
+# Purpose: Validate that the isolated CUL1 WHB domain retains PPI with RBX1
+#          confirming it is a viable standalone scaffold for redesign
+#
+# Run with: --num_diffusion_samples 5
+# In ColabFold Boltz notebook set num_seeds=5
+
+version: 1
+
+sequences:
+  - protein:
+      id: A
+      sequence: EDRKLLIQAAIVRIMKMRKVLKHQQLLGEVLTQLSSRFKPRVPVIKKCIDILIEKEYLERVDGEKDTYSYLA
+  - protein:
+      id: B
+      sequence: MAAAMDVDTPSGTNSGAGKKRFEVKKWNAVALWAWDIVVDNCAICRNHIMDLCIECQANQASATSEECTVAWGVCNHAFHFHCISRWLKTRQVCPLDNREWEFQKYGH

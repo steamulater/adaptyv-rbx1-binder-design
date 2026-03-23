@@ -1,0 +1,18 @@
+# Boltz-1 prediction: Glomulin fragment + RBX1 complex
+# Chain A: Glomulin residues 336-582 (247 AA) — binder scaffold (PDB 4F52, chain F)
+# Chain B: RBX1 full length (108 AA, UniProt P62877)
+# Purpose: Validate that Glomulin fragment retains PPI with RBX1 RING-H2 domain
+#          and confirm E2-docking surface engagement
+#
+# Run with: --num_diffusion_samples 5
+# In ColabFold Boltz notebook set num_seeds=5
+
+version: 1
+
+sequences:
+  - protein:
+      id: A
+      sequence: LELLENSLLRIEDNSLLYQYLEIKSFLTVPQGLVKVMTLCPIETLRKKSLAMLQLYINKLDSQGKYTLFRCLLNTSNHSGVEAFIIQNIKNQIDMSLKRTRNNKWFTGPQLISLLDLVLFLPEGAETDLLQNSDRIMASLNLLRYLVIKDNENDNQTGLWTELGNIENNFLKPLHIGLNMSKAHYEAEIKNSQEAQKSKDLCSITVSGEEIPNMPPEMQLKVLHSALFTFDLIESVLARVEELIEIK
+  - protein:
+      id: B
+      sequence: MAAAMDVDTPSGTNSGAGKKRFEVKKWNAVALWAWDIVVDNCAICRNHIMDLCIECQANQASATSEECTVAWGVCNHAFHFHCISRWLKTRQVCPLDNREWEFQKYGH
