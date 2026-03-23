@@ -258,8 +258,53 @@ PDB 1LDJ (CUL1-RBX1-SKP1-SKP2 SCF complex)
 All sequences verified correct. Boltz-1 YAML inputs confirmed ready to submit.
 
 **Next steps:**
-- [ ] Submit 4 Boltz-1 jobs on ColabFold (5 diffusion samples each)
-- [ ] Assess complex ipTM — confirm both scaffolds form PPI with RBX1
+- [x] Submit 4 Boltz-1 jobs on ColabFold (5 diffusion samples each)
+- [x] Assess complex ipTM — confirm both scaffolds form PPI with RBX1
+
+---
+
+### Entry 004 — 2026-03-23
+
+**Status:** Complete
+
+**Work completed:**
+- Ran all 4 Boltz-2 jobs on ColabFold A100 (5 diffusion samples each, `--no_kernels`)
+- Fixed `cuequivariance_ops_torch` dependency error by using `--no_kernels` flag
+- Fixed incorrect `--num_diffusion_samples` flag → correct flag is `--diffusion_samples`
+- Analysed confidence metrics across all 20 models (4 jobs × 5 samples)
+
+**Boltz-2 results summary:**
+
+| Scaffold | Monomer pTM (mean ± sd) | Monomer pLDDT (mean ± sd) | Complex ipTM (mean ± sd) | Complex ipTM range | Verdict |
+|----------|------------------------|--------------------------|--------------------------|-------------------|---------|
+| GLMN 336–582 | 0.877 ± 0.002 | 0.885 ± 0.002 | **0.847 ± 0.020** | 0.814 – 0.870 | **Green light** |
+| CUL1 WHB 705–776 | 0.925 ± 0.003 | 0.939 ± 0.002 | 0.534 ± 0.222 | 0.286 – 0.845 | Proceed with caution |
+
+**Per-model complex ipTM:**
+
+| Model | GLMN ipTM | CUL1 WHB ipTM |
+|-------|-----------|---------------|
+| 0 | 0.848 | 0.734 |
+| 1 | 0.861 | 0.845 |
+| 2 | 0.840 | 0.341 |
+| 3 | 0.814 | 0.286 |
+| 4 | **0.870** | 0.462 |
+
+**Interpretation:**
+- **GLMN fragment:** All 5 models predict a confident, consistent RBX1 interface (ipTM 0.814–0.870). The isolated Glomulin fragment retains RBX1 binding without Cullin context. Strong scaffold — use model 4 (highest ipTM 0.870) for ProteinMPNN.
+- **CUL1 WHB fragment:** Monomer folds exceptionally well (pTM 0.925) but complex ipTM is highly variable (0.286–0.845). Only 2/5 models form a confident interface, suggesting the 72 AA fragment needs the full Cullin scaffold for stable RBX1 docking. Use model 1 (ipTM 0.845) as lower-confidence scaffold.
+
+**Best scaffolds selected:**
+- Strategy 2a: `glmn_monomer_model_4.pdb` → ProteinMPNN redesign (high confidence)
+- Strategy 2b: `cul1_whb_complex_model_1.pdb` chain A → ProteinMPNN redesign (lower confidence)
+
+**Next steps:**
+- [ ] Download Boltz output PDBs → `boltz_outputs/`
+- [ ] Run ProteinMPNN on GLMN model 4 scaffold (Strategy 2a)
+- [ ] Run ProteinMPNN on CUL1 WHB model 1 scaffold (Strategy 2b)
+- [ ] Set up RFdiffusion Colab run (Strategy 1)
+- [ ] Validate all designs with Boltz complex prediction
+- [ ] Filter for novelty (≥25% edit distance) and rank top 100
 
 ---
 
