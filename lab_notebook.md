@@ -455,6 +455,64 @@ All 96 sequences are ≥55% edit distance from the original scaffold (well above
 
 ---
 
+### Entry 007 — 2026-03-23
+
+**Status:** Complete
+
+**Work completed:**
+- Computed RBX1 RING domain RMSD for all 96 complex predictions vs native scaffold reference
+- Reference: chain B (RBX1) from `glmn_rbx1_complex_model_4.pdb` (native Glomulin–RBX1 scaffold prediction)
+- Metric: Cα RMSD restricted to **residues 32–108** (structured RING-H2 domain only; residues 1–31 are disordered and inflate RMSD artificially)
+- For each sequence, used the **best single-model** complex (highest single-model ipTM from 5 diffusion samples)
+- Question: do our binders bind to a pre-formed RBX1 surface (**locked-in**) or force RBX1 to rearrange (**induced fit**)?
+
+**Results — RBX1 RING RMSD (res 32–108, Cα):**
+
+| Scaffold | n | RMSD mean ± sd | RMSD range | Locked <1Å | Moderate 1–2Å | Induced fit >2Å |
+|----------|---|----------------|------------|------------|----------------|-----------------|
+| **GLMN** | 48 | **1.09 ± 0.27 Å** | 0.60–1.84 Å | 18 (38%) | 30 (62%) | **0 (0%)** |
+| CUL1_WHB | 48 | 5.11 ± 1.05 Å | 2.91–7.39 Å | 0 (0%) | 0 (0%) | **48 (100%)** |
+
+**Correlation (avg ipTM vs RING RMSD, all 96 sequences): r = −0.84**
+
+**Interpretation:**
+
+- **GLMN — locked-in binders:** All 48 sequences have RING RMSD < 2 Å; 18 are below 1 Å. RBX1 barely moves. The ProteinMPNN-redesigned sequences dock onto RBX1's pre-formed surface with minimal receptor reorganisation. This is the ideal binding mode — high ipTM without distorting the target. The strong negative correlation (r = −0.84) confirms: **less RBX1 distortion = better predicted binding**.
+
+- **CUL1_WHB — induced fit binders:** All 48 sequences distort the RING domain by >2 Å (mean 5.1 Å), even in the best single-model predictions. The 72 AA fragment is too short to fill the RBX1 interface without pulling loops out of position. This explains both the low average ipTM (mean 0.595) and the extreme variance across diffusion samples — Boltz is sampling different induced-fit poses rather than converging on a single bound state.
+
+- **Biological significance:** The CUL1 WHB domain naturally contacts RBX1 as part of the ~90 kDa Cullin scaffold. The Cullin framework constrains the WHB–RBX1 geometry from both sides. As a 72 AA isolated fragment, it loses that constraint and must deform RBX1 to bind. The GLMN scaffold, by contrast, was evolved as a standalone inhibitor and maintains the correct geometry independently.
+
+**Top 5 GLMN by RMSD (most locked-in interfaces):**
+
+| Rank | Seq ID | avg ipTM | RING RMSD | Classification |
+|------|--------|----------|-----------|----------------|
+| 1 | GLMN_T0.3_s8 | 0.878 | 0.603 Å | Rigid — locked in |
+| 2 | GLMN_T0.3_s12 | 0.882 | 0.910 Å | Minor flex |
+| 3 | GLMN_T0.2_s5 | 0.879 | 0.892 Å | Minor flex |
+| 4 | GLMN_T0.2_s14 | 0.879 | 0.915 Å | Minor flex |
+| 5 | GLMN_T0.1_s11 | 0.887 | 0.960 Å | Minor flex |
+
+**Visualisations:**
+
+*Figure 1 — Full RMSD analysis (4-panel): distribution, ipTM vs RMSD scatter, histogram, temperature breakdown*
+
+![RBX1 RING RMSD analysis: violin, scatter, histogram, and temperature-grouped bar plots for all 96 sequences](rbx1_rmsd_analysis.png)
+
+*Figure 2 — Top 15 sequences: ipTM and RING RMSD side-by-side*
+
+![Top 15 sequences by avg ipTM showing paired ipTM and RING RMSD bars coloured by scaffold](rbx1_rmsd_top15.png)
+
+**Key design implication:**
+The GLMN scaffold is not only producing better ipTM scores — it is doing so through a fundamentally superior binding mechanism. For experimental validation, locked-in binders are far more likely to succeed: they don't require the target to pay an entropic/enthalpic cost of rearrangement. For submission, **GLMN sequences with both high ipTM and low RING RMSD are the primary candidates.**
+
+**Next steps:**
+- [ ] Run mmseqs2 UniRef50 novelty screen on all 48 GLMN sequences + 7 CUL1_WHB above avg ipTM 0.7
+- [ ] Final submission ranking: prioritise by ipTM, then by RING RMSD (lower = better)
+- [ ] Submit by March 26, 2026 deadline
+
+---
+
 ## Sequences Submitted
 
 | # | Sequence ID | Length (AA) | ipTM | pLDDT | Edit dist. | Notes |
