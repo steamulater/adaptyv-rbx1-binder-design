@@ -128,8 +128,10 @@ PDB 4F52 (Glomulin-RBX1-CUL1 crystal structure)
 **Rationale:** Glomulin is a natural CRL inhibitor; backbone geometry is experimentally validated against the exact E2-docking surface. 247 AA — at the competition limit.
 
 **Key structural references:**
-- 4F52 scaffold: chain F, residues 336–582 (see `Scaffold_4F52_582-336.png`)
+- 4F52 scaffold: chain F, residues 336–582
 - Aligned to 2LGV (RBX1 NMR): RMSD = 7.692 Å on 88 atoms
+
+![4F52 Glomulin scaffold in PyMOL — orange: Glomulin chain F res 336-582; green: CRL complex](Scaffold_4F52_582-336.png)
 
 ---
 
@@ -166,8 +168,10 @@ PDB 1LDJ (CUL1-RBX1-SKP1-SKP2 SCF complex)
 **Rationale:** Much more compact than Glomulin (72 vs 247 AA), leaving headroom for linkers or extensions. The WHB domain is the direct structural contact between Cullin and the RBX1 RING domain.
 
 **Key structural references:**
-- 1LDJ scaffold: chain A, residues 705–776 (see `Scaffold_1LDJ_705-776.png`)
+- 1LDJ scaffold: chain A, residues 705–776
 - Aligned to 2LGV (RBX1 NMR): RMSD = 7.692 Å on 88 atoms
+
+![1LDJ CUL1 WHB domain scaffold in PyMOL — yellow: CUL1 chain A res 705-776; red: RBX1](Scaffold_1LDJ_705-776.png)
 
 **Compute:** ProteinMPNN runs locally on M3 (MPS-accelerated); Boltz-1 and validation on ColabFold + tier ($50/month)
 
@@ -232,6 +236,30 @@ PDB 1LDJ (CUL1-RBX1-SKP1-SKP2 SCF complex)
 - [ ] Set up RFdiffusion Colab run (Strategy 1)
 - [ ] Validate all designs with ColabFold AF2-multimer
 - [ ] Filter for novelty and rank top 100
+
+---
+
+### Entry 003 — 2026-03-22
+
+**Status:** Complete
+
+**Work completed:**
+- BLAST verified all three sequences against SwissProt (NCBI blastp)
+- All sequences confirmed 100% identity to correct human proteins at correct positions
+
+**BLAST results:**
+
+| Sequence | BLAST Top Hit | Identity | Position | NCBI RID |
+|----------|--------------|----------|----------|----------|
+| RBX1 | P62877 — E3 ubiquitin-protein ligase RBX1, *H. sapiens* | 108/108 (100%) | 1–108 | W1DWTW13014 |
+| Glomulin 336–582 | Q92990 — Glomulin (FAP), *H. sapiens* | 247/247 (100%) | 336–582 | W1DWUCET014 |
+| CUL1 705–776 | Q13616 — Cullin-1, *H. sapiens* | 72/72 (100%) | 705–776 | W1DWU7Y7014 |
+
+All sequences verified correct. Boltz-1 YAML inputs confirmed ready to submit.
+
+**Next steps:**
+- [ ] Submit 4 Boltz-1 jobs on ColabFold (5 diffusion samples each)
+- [ ] Assess complex ipTM — confirm both scaffolds form PPI with RBX1
 
 ---
 
