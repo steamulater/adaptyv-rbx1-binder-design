@@ -1,7 +1,7 @@
 # Lab Notebook: RBX1 Binder Design
 **Competition:** GEM x Adaptyv Bio — RBX1 Binder Design Challenge
 **Submission deadline:** March 26, 2026
-**Experimenter:** Tamuka Martin
+**Experimenter:** Tamuka Martin Chidyausiku @steamulater
 
 ---
 
