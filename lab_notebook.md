@@ -298,8 +298,31 @@ All sequences verified correct. Boltz-1 YAML inputs confirmed ready to submit.
 - Strategy 2a: `glmn_monomer_model_4.pdb` → ProteinMPNN redesign (high confidence)
 - Strategy 2b: `cul1_whb_complex_model_1.pdb` chain A → ProteinMPNN redesign (lower confidence)
 
+**Structural validation in PyMOL — Boltz models aligned to native crystal structures:**
+
+*CUL1 WHB — Boltz model vs RBX1 (2LGV) interface view:*
+- 1LDJ alignment RMSD = 2.993 Å (72 atoms)
+- Boltz model vs 2LGV RMSD = 4.844 Å (72 atoms)
+- Boltz model correctly recapitulates the WHB–RBX1 interface geometry
+
+![CUL1 WHB Boltz model (orange/magenta) aligned to 2LGV RBX1 (green) — interface view](Boltz_CUL1WHB_RBX1_interface_alignment.png)
+
+*CUL1 WHB — Boltz model in context of full native 1LDJ structure:*
+- Boltz WHB domain vs native 1LDJ WHB region: RMSD = 0.649 Å (72 atoms) — essentially identical
+- Compact coloured region (green/orange/teal) sits correctly within full Cullin scaffold (wheat)
+
+![CUL1 WHB Boltz model (coloured) shown in context of full 1LDJ native structure (wheat)](Boltz_CUL1WHB_1LDJ_native_context.png)
+
+*GLMN — Boltz model vs native 4F52 crystal structure, gaps filled:*
+- MatchAlign score: 1249.5, 276 atoms aligned
+- RMSD = 0.588 Å on 198 atoms — near-perfect match to crystal structure
+- Missing loops (res 433–438, 533–549) now fully modelled (visible as extra density in green Boltz model vs salmon crystal)
+- Object `aln_4F52_to_glmn_rbx1_complex_model_4` created
+
+![GLMN Boltz model (green/teal) aligned to 4F52 crystal (salmon/magenta) — missing loops now filled](Boltz_GLMN_4F52_gaps_filled_alignment.png)
+
 **Next steps:**
-- [ ] Download Boltz output PDBs → `boltz_outputs/`
+- [x] Download Boltz output PDBs → `boltz_outputs/`
 - [ ] Run ProteinMPNN on GLMN model 4 scaffold (Strategy 2a)
 - [ ] Run ProteinMPNN on CUL1 WHB model 1 scaffold (Strategy 2b)
 - [ ] Set up RFdiffusion Colab run (Strategy 1)
