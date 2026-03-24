@@ -9,3 +9,6 @@ build/
 ProteinMPNN/
 .claude/
 *.cif
+boltz_DESIGN_results/
+diamond_db/
+mmseqs_db/
