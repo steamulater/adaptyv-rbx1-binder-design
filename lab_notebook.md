@@ -767,6 +767,41 @@ For comparison, the GLMN_T0.1_s8 avg ipTM is 0.851 and RING RMSD is 1.21 Å — 
 
 ---
 
+### Entry 011 — 2026-03-24
+
+**Status:** Complete  
+**Goal:** Visualise RFdiffusion hotspot residues and contig in PyMOL — confirm the conditioning surface is coherent before launching the Colab run
+
+#### PyMOL Visualisation of RFdiffusion Inputs
+
+![PyMOL: rbx1_ring_renumbered.pdb (blue surface/cartoon, chain A residues 1-77) with core hotspot residues shown as red sticks. Pink helical structure and green chain in background are native complex objects from prior session.](hotspots_for_rfdiffusion.png)
+
+**Input file:** `rbx1_ring_renumbered.pdb` (chain A, res 1–77; original RBX1 numbering 32–108)
+
+**What is shown:**
+- Blue surface + cartoon = RBX1 RING domain (the fixed contig for RFdiffusion: `A1-77`)
+- Red sticks = 14 core hotspot residues (`A4,A6,A12,A14,A15,A23,A24,A26,A28,A52,A56,A60,A64,A66`)
+- Pink helical + green objects in background = GLMN and RBX1 from the native complex (previous session objects, not part of the RFdiffusion input)
+
+**Key observation — hotspots form a coherent concave patch:**
+
+The 14 core hotspot residues are not scattered across the RBX1 surface — they cluster tightly on a single concave face of the RING domain. This is critical for RFdiffusion: conditioning on a well-defined surface patch lets the diffusion model converge on a coherent binder backbone that approaches from a consistent direction. Dispersed hotspots would produce backbones approaching from multiple angles that cannot all be satisfied simultaneously.
+
+The concave geometry of the hotspot pocket (visible in the surface representation) is also favourable: it provides shape complementarity that a designed helix or loop can dock into, giving enthalpic driving force for binding beyond just hydrophobic burial.
+
+**Validation of hotspot selection:**
+The hotspot face in the renumbered structure aligns with the direction from which the GLMN backbone (pink, background) approaches in the native complex — confirming that the conditioning surface correctly identifies the biologically relevant binding face. RFdiffusion will explore new backbone geometries that contact this same face, potentially from different angles or with different secondary structure compositions than GLMN.
+
+**Ready to run RFdiffusion.** Upload `rbx1_ring_renumbered.pdb` to Colab and use:
+```
+contigs = "A1-77/0 60-100"
+hotspot_res = "A4,A6,A12,A14,A15,A23,A24,A26,A28,A52,A56,A60,A64,A66"
+num_designs = 200
+```
+
+
+---
+
 ## Sequences Submitted
 
 | # | Sequence ID | Length (AA) | ipTM | pLDDT | Edit dist. | Notes |
