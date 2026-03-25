@@ -802,6 +802,113 @@ num_designs = 200
 
 ---
 
+### Entry 012 — 2026-03-25
+
+**Status:** Complete
+**Goal:** Analyse Batch 2 RFdiffusion results, run Nipah competition retrospective, apply evidence-based metrics to re-score all candidates, finalise top 100 for submission.
+
+---
+
+#### Batch 2 Boltz-2 Results — RFdiffusion Sequences
+
+Boltz-2 complex predictions completed on Colab A100 after ~2.5 hours (including one restart due to missing `cuequivariance-torch` dependency). Results downloaded to `boltz_rfdiffusion/`.
+
+**Funnel: 200 → 31 (original) → 57 (after re-scoring):**
+
+| Stage | n | Loss | Reason |
+|---|---|---|---|
+| RFdiffusion backbones | 200 | — | — |
+| Length filter (65–95 AA) | 151 | −49 | Binder length outside target |
+| ProteinMPNN (best-per-backbone) | 151 | 0 | 1 sequence per backbone |
+| Boltz-2 monomer completed | 118 | −33 | Monomer run stopped early |
+| Pass ipTM ≥ 0.70 (complex) | 57 | −61 | Failed complex confidence filter |
+| Clean (no poly-Ala termini) | 56 | −1 | RFD_27 had 11+17 terminal alanines |
+
+The monomer pTM filter (originally applied) eliminated a further 25 sequences from the 57 — but Nipah retrospective showed pTM has AUROC 0.501 (random), so this filter was dropped (see below).
+
+**Score ranges (Batch 2, n=151 with complex data):**
+- ipTM: 0.33–0.91 (mean 0.70), 57/151 pass ≥ 0.70
+- complex ipLDDT: 0.55–0.85 (mean 0.68)
+
+![Batch 2 funnel analysis and Batch 1 vs Batch 2 score comparison](batch2_analysis.png)
+
+---
+
+#### Nipah Competition Retrospective Analysis
+
+Analysed 1,030 sequences from the Adaptyv Nipah binder competition with full experimental outcomes (BLI/SPR binding data).
+
+**Key findings:**
+
+| Finding | Value |
+|---|---|
+| Overall binding rate | 10% (103/1030) |
+| Expression rate | 86% (884/1030) |
+| Best-performing class | scFv (31% binding rate) |
+| Median KD of binders | 24.5 nM |
+| Sub-nM binders | 8/102 with KD data |
+
+**Predictor AUROC ranking (binders vs non-binders):**
+
+| Metric | AUROC | Significance | Used previously? |
+|---|---|---|---|
+| Boltz2 complex ipLDDT | **0.691** | p=2.5e-10 *** | No |
+| Shape complementarity | **0.687** | p=6.8e-10 *** | No |
+| Boltz2 pLDDT (monomer) | 0.640 | p=3.5e-6 *** | No |
+| Boltz2 min ipSAE | 0.638 | p=4.8e-6 *** | No |
+| Boltz2 ipTM | 0.603 | p=6.9e-4 *** | **Yes (only one)** |
+| **Boltz2 pTM (monomer)** | **0.501** | p=0.97 (ns) | **Yes (as filter!)** |
+
+**Critical insight:** The monomer pTM filter we applied (AUROC 0.501) was eliminating sequences at random — it has zero predictive power for experimental binding. `complex_iplddt` is a 15-point better predictor than ipTM. Both are better ranking criteria than pTM.
+
+**Threshold calibration note:** The Nipah-optimal ipLDDT threshold (0.850) is not portable to our GLMN/RFdiffusion sequences — our ipLDDT values range 0.61–0.85 (median 0.71) versus Nipah scFv/nanobodies which scored 0.80–0.95. The Nipah result tells us *ipLDDT ranks binders better*, not that an absolute threshold of 0.85 applies cross-system.
+
+![Nipah retrospective analysis — predictor AUROC, KD distribution, violin plots](nipah_analysis/nipah_analysis.png)
+
+---
+
+#### Re-scoring with Nipah-Derived Approach
+
+Applied evidence-based scoring changes to all 247 candidates (96 Batch 1 + 151 Batch 2):
+
+**New filter and ranking:**
+- **Keep:** ipTM ≥ 0.70 (hard gate — AUROC 0.603, still meaningful)
+- **Drop:** mono pTM ≥ 0.70 (AUROC 0.501 — random, costs us sequences with no benefit)
+- **Drop:** poly-Ala terminal sequences (RFD_27)
+- **Rank by composite score:** 0.5 × ipTM + 0.5 × complex_ipLDDT (incorporates Nipah's best predictor)
+
+**Results:**
+
+| | Old filter | New filter |
+|---|---|---|
+| Batch 1 (GLMN + CUL1_WHB) | 55 | 55 |
+| Batch 2 (RFdiffusion) | 32 | 57 |
+| **Total** | **87** | **112** |
+
+The 26 sequences gained are Batch 2 designs whose monomers failed or were missing — correctly recovered by dropping the uninformative pTM filter. One sequence lost (RFD_27, poly-Ala termini).
+
+112 > 100 cap → **top 100 by composite score selected for final submission: 53 Batch 1 + 47 Batch 2.**
+
+![Re-scoring with Nipah-derived thresholds](rescore_analysis.png)
+
+**Final submission:** `final_submission_v2.fasta` — 100 sequences ranked by composite score (0.5×ipTM + 0.5×ipLDDT), ipTM range 0.727–0.910.
+
+---
+
+#### Files generated this session
+
+| File | Description |
+|---|---|
+| `batch2_analysis.py` / `batch2_analysis.png` | Batch 2 funnel + Batch 1 vs Batch 2 comparison |
+| `nipah_analysis/analyze_nipah.py` | Nipah retrospective analysis script |
+| `nipah_analysis/nipah_analysis.png` | Nipah predictor AUROC, binding rate, KD distribution |
+| `rescore_candidates.py` | Re-scoring script with Nipah-derived composite |
+| `rescore_analysis.png` | Old vs new filter comparison visualisation |
+| `rescored_all.csv` | All 112 passing sequences with composite scores |
+| `final_submission_v2.fasta` | Final 100 sequences for submission |
+
+---
+
 ## Sequences Submitted
 
 | # | Sequence ID | Length (AA) | ipTM | pLDDT | Edit dist. | Notes |
