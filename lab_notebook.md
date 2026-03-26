@@ -1117,6 +1117,90 @@ Ranked by composite3 score. Top 5: RFD_167, RFD_114, RFD_199, RFD_97, RFD_1.
 
 ---
 
+## Entry 014 — ipSAE Recalibration & Design Improvement Strategy
+**Date:** 2026-03-26
+
+### Background
+Proteinbase scores revealed our submitted sequences have ipSAE values of ~0.40–0.73 on their 0–1 scale (higher = better; threshold: >0.6 = likely binder, ~0.8 = strong). Our original ipSAE was raw Å (lower = better) — not directly comparable. Proteinbase re-ran Boltz-2 on the **full-length RBX1 (108 AA)**, not our 77 AA RING domain, so their PAE matrices are fundamentally different. We cannot exactly replicate their scores from our existing data.
+
+### Updated ipSAE metric (normalised)
+
+Computed two new internally-consistent normalised metrics using `recompute_ipsae_norm.py`:
+
+| Metric | Formula | Range | Notes |
+|---|---|---|---|
+| `ipsae_tm8` | mean(1/(1+(PAE/8)²)) over cross-chain pairs | 0–1, higher=better | TM-score-like, d0=8 Å |
+| `ipsae_frac5` | fraction of cross-chain pairs with PAE < 5 Å | 0–1, higher=better | Strict — only high-confidence contacts |
+
+Updated composite: `composite4 = 0.35×ipTM + 0.30×ipLDDT + 0.35×ipsae_tm8` (ipSAE upweighted per Nipah AUROC ranking)
+
+### Results by scaffold
+
+| Scaffold | n | ipSAE_tm8 mean | ipSAE_tm8 range | composite4 mean |
+|---|---|---|---|---|
+| GLMN | 48 | 0.571 | 0.513–0.626 | 0.717 |
+| RFdiffusion | 57 | 0.568 | 0.419–0.726 | 0.691 |
+| CUL1_WHB | 7 | 0.491 | 0.430–0.536 | 0.642 |
+
+GLMN has the tightest, most consistent ipSAE — natural scaffold advantage. RFdiffusion has the widest range — top de novo designs (RFD_199: 0.726, RFD_167: 0.715) outperform all GLMN sequences, but the tail is weaker.
+
+### Key rank changes (composite3 → composite4)
+
+| Sequence | c3 rank | c4 rank | Shift | ipSAE_tm8 |
+|---|---|---|---|---|
+| RFD_160_best | 15 | **1** | +14 | 0.631 |
+| RFD_56_best | 36 | **3** | +33 | 0.594 |
+| RFD_37_best | 18 | **7** | +11 | 0.623 |
+| RFD_167_best | 1 | 10 | −9 | 0.715 |
+| RFD_199_best | 3 | 14 | −11 | 0.726 |
+
+### 4 sequences with weak ipSAE in submitted 100
+
+| Sequence | ipSAE_tm8 | ipTM | Flag |
+|---|---|---|---|
+| RFD_29_best | 0.463 | 0.701 | Low confidence interface |
+| CUL1_WHB_T0.2_s3 | 0.490 | 0.701 | Induced-fit risk |
+| RFD_45_best | 0.493 | 0.766 | Low interface confidence |
+| RFD_28_best | 0.494 | 0.723 | Low interface confidence |
+
+### Why our ipSAE is mild — root causes
+
+1. **Short binders (65–95 AA)** — small contact footprint; fewer cross-chain pairs to average over
+2. **De novo backbones** — AI-hallucinated geometries have less precise interface packing than evolved proteins
+3. **Single ProteinMPNN sequence per backbone** — only 1–2 sequences explored per backbone
+4. **No Rosetta interface minimization** — relaxing the interface would tighten packing and improve ipSAE
+5. **No pDockQ filter** — Proteinbase shows pDockQ ~0.01–0.02 for our sequences; pDockQ < 0.10 means interface geometry is uncertain
+
+### Design improvement strategies for next round
+
+**Structural:**
+- Longer binders (100–150 AA) — more interface area → more confident cross-chain contacts
+- Partial diffusion from GLMN backbone — keep natural binding geometry, generate sequence diversity
+- Multi-state design — condition on RBX1 + GLMN to complement the natural binding mode
+
+**Filtering (apply before next submission):**
+- pDockQ > 0.10 (hard filter — eliminates wrong interface geometry)
+- ipSAE_tm8 > 0.58 (removes bottom quartile)
+- min_ipSAE_tm8 > 0.52
+- Shape complementarity > 50
+- Seed consistency: reject if ipSAE varies >0.15 across 5 seeds
+
+**Sequence design:**
+- ProteinMPNN: 5–10 sequences per backbone (currently 1–2)
+- ProteinMPNN temperature 0.05–0.10 (lower = more conservative = higher ipSAE)
+- Interface-biased ProteinMPNN at hotspot positions
+
+**BoltGen (once hotspot bug fixed):**
+- Run 50+ designs conditioned on RING-H2 hotspots
+- refolding_rmsd_threshold: 2.0
+- Compare BoltGen vs RFdiffusion ipSAE distributions — key benchmark
+
+### Output files
+- `recompute_ipsae_norm.py` — recomputation script
+- `rescored_v2.csv` — all sequences with ipsae_tm8, ipsae_frac5, composite4
+
+---
+
 ## Resources
 
 - Competition page: GEM x Adaptyv RBX1 Binder Design Challenge
