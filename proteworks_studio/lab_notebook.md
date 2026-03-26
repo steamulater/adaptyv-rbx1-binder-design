@@ -472,7 +472,7 @@ Without the hotspot constraints block, BoltGen will hallucinate a binder that do
 
 ### Entry 003 — Job Cancellation + Run 2 Setup Investigation
 **Date:** 2026-03-26
-**Status:** IN PROGRESS
+**Status:** COMPLETE
 **Screenshots:** `Screenshot 2026-03-26 at 12.08.04 AM.png` → `Screenshot 2026-03-26 at 12.15.46 AM.png`
 
 ---
@@ -510,7 +510,7 @@ Changed Hardware Configuration from A100 → **NVIDIA Tesla T4** ("Cost-effectiv
 **Step 5 — Refolding RMSD Threshold still not set (12.15.34)**
 Field is visible in Advanced Settings but empty. Will set for Run 2 once hotspot issue is resolved. Output directory still pointing to old job path (`~/Boltz_Gen_RBX1/boltzgen-652e8823`) — needs updating.
 
-**Step 6 — Discovered "Add Structure File" modal (12.15.42 + 12.15.46)**
+**Step 6 — Discovered "Add Structure File" modal (`Screenshot 2026-03-26 at 12.15.42 AM.png` + `Screenshot 2026-03-26 at 12.15.46 AM.png`)**
 Clicked **Add Structure File** button. This opens a richer **Edit Structure File** modal with fields that sequence-only input doesn't have:
 
 | Field | Purpose |
@@ -573,6 +573,86 @@ Need to confirm:
 | 14 | UX / discoverability | Hotspot specification is only possible via "Add Structure File" → Design Regions, not via "Add PROTEIN" sequence input. This is non-obvious — most binder design users will start with a sequence paste and never find the hotspot field | High | Add a "Hotspot Residues" field directly to the Add PROTEIN modal, or show a tooltip on Add PROTEIN saying "For hotspot-conditioned design, use Add Structure File instead" |
 | 15 | UX | "Design Regions", "Include Proximity", "Fixed Positions" in the Structure File modal have no tooltips explaining format or purpose | Medium | Add inline help text with example input format (e.g., `4,6,12-15` or `A:4,A:6`) |
 | 16 | Bug | Output directory after cancellation still defaults to old job path (`boltzgen-652e8823`) in the rerun form | Low | Reset output directory to a fresh default on rerun |
+
+---
+
+### Entry 004 — Run 2 Submission: Hotspot-Conditioned Design on T4
+**Date:** 2026-03-26
+**Status:** RUNNING — awaiting results
+**Screenshots:** `Screenshot 2026-03-26 at 12.21.46 AM.png`, `Screenshot 2026-03-26 at 12.23.07 AM.png`, `Screenshot 2026-03-26 at 12.28.08 AM.png`, `Screenshot 2026-03-26 at 12.28.27 AM.png`, `Screenshot 2026-03-26 at 12.30.26 AM.png`
+
+---
+
+#### Step-by-step session log
+
+**Step 1 — Verified RBX1 PDB file (`Screenshot 2026-03-26 at 12.21.46 AM.png`)**
+Opened `rbx1_ring_renumbered.pdb` directly in Chrome to verify structure before uploading. ATOM records confirmed clean: chain A, residues numbered from 1, 77 residues total. File already present in the ProteWorks sandbox file browser from the earlier upload attempt.
+
+**Step 2 — Hotspot entry via Design Regions (`Screenshot 2026-03-26 at 12.23.07 AM.png`)**
+Used **Add Structure File** → uploaded `rbx1_ring_renumbered.pdb` → expanded **Design Regions (1)**.
+
+Format confirmed: dropdown for **Chain ID** + free text field for **Residue Index** (comma-separated integers).
+
+Entered: `4,6,12,14,15,23,24,26,28,52,56,60,64,66`
+
+This is the full RING-H2 E2-binding surface hotspot set — identical to the conditioning used in the primary RFdiffusion campaign.
+
+**Step 3 — YAML Preview confirmed hotspot block (`Screenshot 2026-03-26 at 12.28.08 AM.png`)**
+YAML Preview updated to show hotspot conditioning correctly encoded:
+
+```yaml
+entities:
+  - file:
+      path: "/tmp/inputs/rbx1_ring_renumbered.pdb"
+      include: "all"
+      design:
+        - chain:
+            id: A
+            res_index: 4,6,12,14,15,23,24,26,28,52,56,60,64,66
+constraints:
+  - total_len:
+      min: 70
+      max: 90
+```
+
+Key observations:
+- Hotspots encoded under `design.chain.res_index` within the structure file entity — not a separate `constraints.pocket` block as initially predicted
+- Length constraint `70–90 AA` auto-populated from the Total Length Constraint field ✅
+- YAML still read-only but now correctly reflects hotspot input via the UI
+
+**Step 4 — Settings confirmed (`Screenshot 2026-03-26 at 12.28.27 AM.png`)**
+
+| Parameter | Value |
+|---|---|
+| Protocol | Protein-Anything |
+| Number of Designs | **10** (increased from 1) |
+| Final Design Budget | 30 |
+| GPU | NVIDIA Tesla T4 |
+
+Note: Refolding RMSD Threshold was not set (field left blank). Will add in Run 3.
+
+**Step 5 — Job submitted (`Screenshot 2026-03-26 at 12.30.26 AM.png`)**
+
+| Field | Value |
+|---|---|
+| Job ID | `boltzgen-628e1038` |
+| Submitted | 2026-03-26, 12:30:05 AM |
+| Status | **Running** |
+| GPU | NVIDIA Tesla T4 |
+| Sub-jobs | 1 design-pipeline worker (vs 5 on A100 Run 1) |
+| Old job | `boltzgen-652e8823` confirmed **Cancelled** |
+
+T4 provisioned with only 1 sub-job — much cleaner than Run 1's 5 parallel workers that all stalled.
+
+---
+
+#### What to check when results arrive
+1. Which surface did BoltGen target? Compare to hotspot patch — did `res_index` conditioning work?
+2. How many designs returned vs budget of 30?
+3. Metrics per design: ipTM, ipLDDT, PAE available?
+4. Are CIF/PDB structure files downloadable per design?
+5. Wall time on T4 for 10 designs / budget 30
+6. Compare ipTM distribution vs primary campaign (GLMN mean 0.878, RFD mean ~0.82)
 
 ---
 
