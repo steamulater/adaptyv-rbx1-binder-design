@@ -470,33 +470,109 @@ Without the hotspot constraints block, BoltGen will hallucinate a binder that do
 
 ---
 
-### Entry 003 — Run 2 Plan: Hotspot-Conditioned Design
-**Date:** 2026-03-25
-**Status:** PENDING (waiting for Run 1 results)
+### Entry 003 — Job Cancellation + Run 2 Setup Investigation
+**Date:** 2026-03-26
+**Status:** IN PROGRESS
+**Screenshots:** `Screenshot 2026-03-26 at 12.08.04 AM.png` → `Screenshot 2026-03-26 at 12.15.46 AM.png`
 
-#### Objective
-Repeat the BoltGen job with explicit hotspot conditioning on the RBX1 RING-H2 E2-binding surface. This is the critical difference from Run 1 and mirrors the conditioning used in our primary RFdiffusion campaign.
+---
 
-#### Changes from Run 1
+#### Step-by-step session log
 
-| Parameter | Run 1 | Run 2 |
-|---|---|---|
-| Hotspot contacts | Not set | A4, A6, A12, A14, A15, A23, A24, A26, A28, A52, A56, A60, A64, A66 |
-| Refolding RMSD threshold | Not set | 2.0 Å |
-| Number of Designs | 1 | TBD (increase) |
-| Final Design Budget | 30 | TBD (increase) |
+**Step 1 — Job cancelled (12.08.04)**
+Stopped `boltzgen-652e8823` via Workflow Status → stop button. Platform warned:
+> "Warning: Any intermediate data will be lost if you stop these workflows."
 
-#### Hotspot entry method (to confirm in UI)
-Need to determine which UI field accepts hotspot residues — likely one of:
-- **Binding Types (Array)** in the Edit Protein modal
-- **Use String Format** option (may accept `A4,A6,A12,...` or `A:4,A:6,...`)
-- Direct YAML edit before submission (if platform exposes the YAML)
+No data lost — job had never actually started computing (no GPU usage detected in 2.5 hours).
 
-#### Success criteria
-- Designs dock to RING-H2 face (residues 4–66 of chain A)
-- ipTM ≥ 0.70
-- RING RMSD < 2.0 Å (no induced-fit deformation)
-- Compare composite scores vs Run 1 and primary campaign baseline
+**Step 2 — Returned to BoltGen form (12.15.13)**
+Protein A still populated with RBX1 sequence. Noticed the **Constraints** section at the bottom of the Design Specification panel. Expanded it.
+
+**Step 3 — Constraints section is insufficient for hotspots (12.15.17)**
+Constraints panel only offers:
+- **Add Bond Constraint**
+- **Add Total Length Constraint**
+
+Neither of these is hotspot/binding site conditioning. The YAML Preview panel below shows the auto-generated input:
+
+```yaml
+entities:
+  - protein:
+      id: A
+      sequence: GGGGTNSGAGKKRFEVKKSNASAQSAWDIVVDNCAICRNHIMDLCIEQANQS...
+```
+
+**Critical finding: the YAML Preview is read-only.** It cannot be edited in the browser. Hotspot contacts cannot be injected manually via the UI. This is the core limitation blocking hotspot-conditioned design.
+
+**Step 4 — GPU switched to T4 (12.15.24)**
+Changed Hardware Configuration from A100 → **NVIDIA Tesla T4** ("Cost-effective, good for most workloads"). This should resolve the provisioning stall from Run 1.
+
+**Step 5 — Refolding RMSD Threshold still not set (12.15.34)**
+Field is visible in Advanced Settings but empty. Will set for Run 2 once hotspot issue is resolved. Output directory still pointing to old job path (`~/Boltz_Gen_RBX1/boltzgen-652e8823`) — needs updating.
+
+**Step 6 — Discovered "Add Structure File" modal (12.15.42 + 12.15.46)**
+Clicked **Add Structure File** button. This opens a richer **Edit Structure File** modal with fields that sequence-only input doesn't have:
+
+| Field | Purpose |
+|---|---|
+| Structure File (CIF/PDB) | Upload the target structure |
+| Include Chains | Specify which chains to use |
+| Exclude Chains | Chains to ignore |
+| **Design Regions** | Residues where the binder should be designed — **likely hotspot entry point** |
+| **Fixed Positions (Not Designed)** | Target residues locked during design |
+| **Binding Types** | Binding site specification |
+| Structure Groups | Chain groupings |
+| Secondary Structure | SS constraints |
+| Design Insertions | Insert design regions |
+| **Include Proximity** | Proximity-based site definition — **possible alternative hotspot method** |
+| Fuse | Chain fusion |
+| Reset Residue Index | Renumber residues |
+
+**This is the correct path for hotspot-conditioned design.** The "Design Regions" and "Include Proximity" fields in the Structure File modal — not the sequence-based "Add PROTEIN" input — are almost certainly where hotspot residues need to be specified. The workflow requires uploading the RBX1 PDB file rather than just pasting the sequence.
+
+---
+
+#### Revised workflow for Run 2
+
+Instead of:
+> Add PROTEIN → paste RBX1 sequence → (no hotspot possible)
+
+Use:
+> **Add Structure File** → upload `rbx1_ring_renumbered.pdb` → expand **Design Regions** → specify residues `4,6,12,14,15,23,24,26,28,52,56,60,64,66`
+
+Need to confirm:
+- Does Design Regions accept a residue list? What format? (comma-separated? range notation?)
+- Is "Include Proximity" an alternative — define a centre residue and radius rather than explicit list?
+- Can the uploaded PDB be the full RING domain or does it need the full RBX1 sequence?
+
+---
+
+#### Run 2 parameters (revised plan)
+
+| Parameter | Value |
+|---|---|
+| Input method | Add Structure File (not Add PROTEIN) |
+| Structure file | `rbx1_ring_renumbered.pdb` (chain A, 77 AA) |
+| Design Regions | `4,6,12,14,15,23,24,26,28,52,56,60,64,66` (RING-H2 hotspots) |
+| Protocol | Protein-Anything |
+| Number of Designs | 5 (increase from 1) |
+| Final Design Budget | 30 |
+| GPU | NVIDIA Tesla T4 |
+| Refolding RMSD Threshold | 2.0 Å |
+| Output directory | `~/Boltz_Gen_RBX1_hotspot` |
+
+---
+
+#### Feedback for Brandon (Entry 003 additions)
+
+| # | Category | Observation | Severity | Suggested fix |
+|---|---|---|---|---|
+| 11 | Infrastructure | A100 jobs stall on provisioning indefinitely in beta — no compute detected after 2.5 hrs | High | Show estimated queue time; default to T4 for beta users; alert after 15 min wait |
+| 12 | UX | 5 "design-pipeline" sub-jobs queued simultaneously with no explanation of job graph | Medium | Show expected step count before submission |
+| 13 | Feature gap | YAML Preview is read-only — power users cannot inject custom parameters (e.g. hotspot contacts) that aren't exposed in the UI | High | Either make YAML editable, or add a "Raw YAML input" toggle for advanced users |
+| 14 | UX / discoverability | Hotspot specification is only possible via "Add Structure File" → Design Regions, not via "Add PROTEIN" sequence input. This is non-obvious — most binder design users will start with a sequence paste and never find the hotspot field | High | Add a "Hotspot Residues" field directly to the Add PROTEIN modal, or show a tooltip on Add PROTEIN saying "For hotspot-conditioned design, use Add Structure File instead" |
+| 15 | UX | "Design Regions", "Include Proximity", "Fixed Positions" in the Structure File modal have no tooltips explaining format or purpose | Medium | Add inline help text with example input format (e.g., `4,6,12-15` or `A:4,A:6`) |
+| 16 | Bug | Output directory after cancellation still defaults to old job path (`boltzgen-652e8823`) in the rerun form | Low | Reset output directory to a fresh default on rerun |
 
 ---
 
