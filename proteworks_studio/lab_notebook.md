@@ -656,6 +656,67 @@ T4 provisioned with only 1 sub-job — much cleaner than Run 1's 5 parallel work
 
 ---
 
+### Entry 004 — Addendum: Workflow Inputs JSON + Provisioning Failure
+**Date:** 2026-03-26
+**Screenshots:** `Screenshot 2026-03-26 at 1.00.32 AM.png`, `Screenshot 2026-03-26 at 3.45.11 AM.png`
+
+#### Finding 1 — Actual backend JSON reveals hotspot conditioning was NOT passed
+
+Clicked **Inputs** on the Workflow Steps bar to reveal the raw JSON sent to the BoltGen backend:
+
+```json
+{
+  "workflow_name": "boltzgen",
+  "execution_id": "boltzgen-628e1038",
+  "submitted_at": "2026-03-26T04:30:05.400001+00:00",
+  "files": {
+    "extra_files": {
+      "Boltz_Gen_RBX1/boltzgen-652e8823/rbx1_ring_renumbered.pdb"
+    }
+  },
+  "parameters": {
+    "protocol": "protein-anything",
+    "num-designs": "10",
+    "gpu-type": "nvidia-tesla-t4",
+    "budget": "30",
+    "refolding-rmsd-threshold": "2",
+    "output_folder": "Boltz_Gen_RBX1/Boltz_Gen_RBX1_hotspot"
+  }
+}
+```
+
+**What made it through correctly:**
+- `refolding-rmsd-threshold: "2"` ✅
+- `gpu-type: "nvidia-tesla-t4"` ✅
+- `num-designs: "10"` ✅
+- `budget: "30"` ✅
+
+**Critical bug — hotspot res_index missing from backend JSON:**
+The `design.chain.res_index: 4,6,12,14,15,23,24,26,28,52,56,60,64,66` visible in the YAML Preview was **never serialised into the actual workflow parameters**. Despite the UI accepting the Design Regions input and the YAML Preview showing it, the backend received no hotspot conditioning. This run would produce unconditioned designs — effectively the same as Run 1.
+
+**Secondary issue — stale file path:**
+The PDB is referenced as `Boltz_Gen_RBX1/boltzgen-652e8823/rbx1_ring_renumbered.pdb` — the old cancelled job's directory. This is fragile; if that folder is cleaned up the file reference breaks.
+
+#### Finding 2 — T4 also fails to provision after 3+ hours
+
+At 3:45 AM (3h 15m after submission), job `boltzgen-628e1038` still shows:
+- Overall Status: Running
+- design-pipeline: "Waiting for resources to become available"
+- Cost Information: "No compute usage has been detected"
+
+T4 provisioning failure is as severe as the A100 failure in Run 1. This is a platform-wide infrastructure issue on the beta, not a configuration error. Cancelling this job.
+
+#### Feedback for Brandon (Entry 004 additions)
+
+| # | Category | Observation | Severity | Suggested fix |
+|---|---|---|---|---|
+| 17 | Bug (Critical) | Design Regions `res_index` field appears in YAML Preview but is silently dropped from the actual backend JSON. Hotspot conditioning is completely non-functional despite UI accepting input. | Critical | Validate that all UI fields serialise correctly to backend parameters; add a "Submitted Parameters" confirmation step showing exactly what the backend received |
+| 18 | Bug | Uploaded structure file is referenced by old cancelled job's directory path (`boltzgen-652e8823/rbx1_ring_renumbered.pdb`). Fragile — breaks if old job folder is cleaned up. | High | File references should use a stable sandbox path, not a job-specific directory |
+| 19 | Infrastructure | T4 GPU also fails to provision after 3+ hours with no error, no ETA, no retry logic. Platform appears resource-constrained on beta infrastructure overnight. | High | Implement a provisioning timeout (e.g. 30 min) with automatic retry or user notification; show queue position if resources are unavailable |
+| 20 | UX | "Waiting for resources to become available" message gives users no actionable path — no cancel suggestion, no ETA, no alternative GPU option | Medium | Add: estimated wait time, link to cancel, option to switch GPU type without resubmitting full job |
+
+---
+
 ## Results
 
 *(Populated as designs come in)*
