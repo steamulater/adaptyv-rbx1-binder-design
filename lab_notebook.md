@@ -1201,6 +1201,76 @@ GLMN has the tightest, most consistent ipSAE — natural scaffold advantage. RFd
 
 ---
 
+## Entry 015 — RBX1 Contact Audit: Disordered Tail Problem
+
+**Date:** 2026-03-26
+
+### The Problem
+
+A critical input preparation error was identified: the Boltz-2 complex predictions used the full 108 AA RBX1 sequence, but `rbx1_ring_domain.pdb` (the RFdiffusion scaffold input) only covers residues 32–108. This means residues 1–31 of the full sequence — an entirely unstructured N-terminal tail — were present in every Boltz-2 complex prediction but never part of the design target.
+
+Boltz-2, unconstrained, freely modeled this N-terminal tail as a flexible chain — and binders docked onto it. Similarly, the C-terminal tail (residues 84–108) beyond the core RING zinc coordination motif is disordered in free RBX1 solution structures.
+
+**Structured RING core boundary used for analysis:**
+- Res 1–31: N-terminal disordered tail (not in crystal structure, not in RFdiffusion input)
+- Res 32–83: Structured RING core (zinc coordination: C42, C45, H48, C53, C56, C68, C75, H77, H80, H82, C83)
+- Res 84–108: C-terminal tail (disordered in free RBX1, flexible in most crystal structures)
+
+### Results (247 sequences audited)
+
+| Scaffold | n | RING core (32-83) mean | N-term junk mean | C-term junk mean | >60% structured |
+|----------|---|----------------------|-----------------|-----------------|-----------------|
+| GLMN | 48 | 39% | 42% | 19% | **0/48** |
+| CUL1_WHB | 48 | 34% | 35% | 31% | 3/48 |
+| RFdiffusion | 151 | 36% | 31% | 34% | 12/151 |
+
+**Only 15 designs out of 247 have >60% contacts to the genuine structured RING core.**
+
+All 48 GLMN redesigns are predominantly contacting the N-terminal disordered tail (~42% mean). These designs may score well on ipTM/ipSAE because Boltz-2 confidently models the N-terminal tail in a fixed conformation when forced to fold a complex — but in reality, that tail is disordered and no binding would occur. This is consistent with the very low pDockQ (0.01–0.02) reported by Proteinbase for our sequences.
+
+### Top designs by structured RING contact fraction
+
+| seq_id | scaffold | N-term% | RING% | C-term% |
+|--------|----------|---------|-------|---------|
+| CUL1_WHB_T0.1_s6 | CUL1_WHB | 0% | 78% | 22% |
+| RFD_160_best | RFdiffusion | 0% | 72% | 28% |
+| CUL1_WHB_T0.1_s8 | CUL1_WHB | 8% | 68% | 24% |
+| RFD_138_best | RFdiffusion | 0% | 66% | 34% |
+| RFD_45_best | RFdiffusion | 0% | 66% | 34% |
+| RFD_165_best | RFdiffusion | 0% | 66% | 34% |
+| RFD_87_best | RFdiffusion | 14% | 66% | 21% |
+| RFD_191_best | RFdiffusion | 0% | 64% | 36% |
+| RFD_20_best | RFdiffusion | 7% | 63% | 30% |
+| RFD_160_best was already rank 1 by composite4 — its RING-dominance validates that metric partially works |
+
+`RFD_160_best` (0% N-term, 72% RING) is both the top design by composite4 and the most structurally legitimate RFdiffusion binder. `CUL1_WHB_T0.1_s6` (78% RING, 0% N-term) is the cleanest design in the entire submission.
+
+### What this means for submitted sequences
+
+- **GLMN designs**: Very likely false positives. High ipTM scores are probably artefacts from binder docking to the modelled (but disordered) N-terminal tail. Unlikely to bind in experiment.
+- **Most RFdiffusion designs**: Mixed picture. The ones with >50% N-term contacts are suspect. The ~12 designs with >60% RING contacts are the legitimate candidates.
+- **CUL1_WHB_T0.1_s6 and _s8**: The two most trustworthy designs in the entire batch.
+
+### Root cause
+
+The correct fix for next-round designs is simple: truncate the RBX1 input to residues 32–83 only (the structured RING core) before running both RFdiffusion and Boltz-2. Never include disordered tails in the folding complex.
+
+Alternatively: provide Boltz-2 with a PAE mask or contact restraint that forces cross-chain contacts only within the structured region.
+
+### Output files
+- `rbx1_contact_audit.csv` — all 247 sequences with N-term/RING/C-term contact fractions
+- `shape_screen_all.csv` — sc_proxy for all scaffolds
+- `proteinmpnn_rerun_top50.ipynb` — Colab notebook for ProteinMPNN rerun on high-sc_proxy backbones
+
+### Action items for next round
+1. **Truncate RBX1 to residues 32–83** before any structure prediction run
+2. **Add a contact fraction filter**: only advance designs where RING core contacts > 50% of total interface
+3. **Reprioritise the rerun list**: use structured_frac from `rbx1_contact_audit.csv` to rank backbones, not sc_proxy alone
+4. **BoltGen target prep**: upload residues 32–83 only to ProteWorks Studio — no tails
+5. **GLMN designs**: do not invest further ProteinMPNN rounds unless reformulated against the truncated target
+
+---
+
 ## Resources
 
 - Competition page: GEM x Adaptyv RBX1 Binder Design Challenge
