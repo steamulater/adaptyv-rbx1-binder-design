@@ -1278,3 +1278,39 @@ Alternatively: provide Boltz-2 with a PAE mask or contact restraint that forces 
 - RFdiffusion Colab: [RFdiffusion notebook](https://colab.research.google.com/github/sokrypton/ColabDesign/blob/v1.1.1/rf/examples/diffusion.ipynb)
 - ProteinMPNN Colab: [ProteinMPNN notebook](https://colab.research.google.com/github/dauparas/ProteinMPNN/blob/main/colab_notebooks/quickdemo.ipynb)
 - ColabFold: [ColabFold notebook](https://colab.research.google.com/github/sokrypton/ColabFold/blob/main/AlphaFold2.ipynb)
+
+---
+
+## Post-submission: LatentX Evaluation (2026-04-01)
+
+### Goal
+Evaluate LatentX (Latent Labs platform) as an additional binder design method against RBX1, and compare head-to-head with all previously used methods using Boltz-2 ipTM as the common metric.
+
+### Runs
+- `spellbound_carter` — 10 designs, 100 AA
+- `supreme_korsakov` — 10 designs, 150 AA
+
+### Key finding: 25% hallucination rate
+5 of 20 designs were direct fragments of the RBX1 target sequence — the model reproduced the target rather than designing a binder. Discarded before scoring.
+
+### Boltz-2 results (15 genuine designs, single-sequence mode, --no_kernels)
+
+| Method | N | Pass≥0.65 | ipTM mean | ipTM max | ipTM min |
+|--------|---|-----------|-----------|----------|----------|
+| GLMN scaffold | 48 | 48 | 0.867 | 0.887 | 0.844 |
+| RFdiffusion+MPNN | 57 | 57 | 0.787 | 0.910 | 0.701 |
+| CUL1-WHB scaffold | 7 | 7 | 0.733 | 0.761 | 0.701 |
+| LatentX (spellbound_carter) | 6 | 0 | 0.351 | 0.487 | 0.203 |
+| LatentX (supreme_korsakov) | 9 | 0 | 0.339 | 0.508 | 0.180 |
+| **LatentX (combined)** | **15** | **0** | **0.344** | **0.508** | **0.180** |
+
+### Verdict
+LatentX is not competitive for RBX1 at this stage. Zero designs pass the ipTM ≥ 0.65 threshold used for all prior submissions. The best LatentX design (0.508) is worse than the worst RFdiffusion or scaffold design (0.701). RFdiffusion+MPNN and GLMN scaffold redesign remain the leading methods by a large margin.
+
+### Technical notes
+- Boltz-2 run with `--no_kernels` (avoids `cuequivariance_torch` crash — same fix used in all prior runs)
+- `msa: empty` in YAMLs (single-sequence mode, MSA server requires auth on Colab)
+- Single-sequence Boltz-2 gives slightly lower absolute ipTM than MSA-assisted runs, but the gap (~0.02-0.05) is too small to explain a 2.5× difference in mean ipTM
+- Notebook: `LatentX_Boltz2_Evaluation.ipynb`
+- Output: `latentx_comparison.csv`, `latentx_scored.csv`
+
