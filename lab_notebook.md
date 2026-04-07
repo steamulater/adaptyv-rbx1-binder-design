@@ -1271,6 +1271,93 @@ Alternatively: provide Boltz-2 with a PAE mask or contact restraint that forces 
 
 ---
 
+## Post-submission: Sequence Composition Audit (2026-04-07)
+
+### Goal
+Screen all 100 submitted designs for sequence pathologies that would cause problems in expression, folding, or experimental validation: homopolymer runs, dipeptide repeats, low-complexity regions, extreme amino acid bias, and charge clustering.
+
+### Summary
+
+| Category | Count | Notes |
+|----------|-------|-------|
+| CRITICAL issues | 33 designs | Primarily RFdiffusion (33/47) |
+| WARNING only | 32 designs | Mixed RFdiffusion + GLMN |
+| Clean | 35 designs | Mostly GLMN (32/35) + 3 CUL1-WHB |
+| Homopolymer run ≥ 4 AA | 31/100 | |
+| Homopolymer run ≥ 6 AA | **18/100** | CRITICAL — will likely cause PCR/synthesis issues |
+| Dipeptide repeats (≥3×) | 19/100 | (AE)×n, (EE)×n, (AA)×n |
+| Low complexity (entropy <2.5) | 62/100 | |
+| >25% Alanine | **25/100** | CRITICAL — likely unfolded / insoluble |
+| >40% E+K | 17/100 | De novo helix bias artifact |
+| <10% hydrophobic | 0/100 | All pass |
+
+![Sequence Composition Audit](sequence_composition_audit.png)
+
+### Per-scaffold breakdown
+
+| Method | N | CRITICAL | WARNING | Clean |
+|--------|---|----------|---------|-------|
+| GLMN | 48 | **0** | 16 | **32** |
+| CUL1-WHB | 5 | 0 | 2 | **3** |
+| RFdiffusion | 47 | **33** | 14 | **0** |
+
+**Every single RFdiffusion design has at least a warning. Zero pass clean.**
+
+### Most problematic designs
+
+| Rank | seq_id | Worst issue | Details |
+|------|--------|-------------|---------|
+| 52 | RFD_47_best | 6 CRITICAL, 13 WARN | A×12 + E×14 + E×7; entropy=0.29 |
+| 65 | RFD_5_best | 5 CRITICAL, 9 WARN | E×8 + A×14; entropy=0.47 |
+| 100 | RFD_12_best | 4 CRITICAL, 8 WARN | A×11 + **E×15**; entropy=0.47 |
+| 10 | RFD_106_best | 4 CRITICAL, 4 WARN | **A×14 + A×7**; 62.4% alanine |
+| 46 | RFD_19_best | 4 CRITICAL, 2 WARN | **A×25** tract; entropy=-0.00 |
+| 13 | RFD_122_best | 4 CRITICAL, 2 WARN | **A×16**; 32.6% alanine |
+| 19 | RFD_10_best | 4 CRITICAL, 2 WARN | **A×18**; 37.8% alanine |
+| 82 | RFD_78_best | 4 CRITICAL, 3 WARN | A×9 + **A×16**; 62.3% alanine |
+
+### What the flags mean experimentally
+
+**Poly-Alanine tracts (A×6+)**
+The most prevalent issue — 25 designs have >25% alanine, with the worst reaching 62.4% (RFD_106_best). Polyalanine is notoriously difficult: it forms highly stable α-helices that aggregate, misfold into amyloid-like fibrils, and resist protease digestion. These designs would likely be insoluble in *E. coli* and may form inclusion bodies. Even if the Boltz-2 score is good, these are dead on arrival experimentally.
+
+**Poly-glutamate/poly-lysine tracts (E×8+, K×4+)**
+17 designs have >40% combined E+K. These are artifacts of RFdiffusion's helical bias for the charged RING surface — the diffusion model learned to build complementary charged helices. While a single charged helix can be functional, tracts like E×15 (RFD_12_best) and E×14 (RFD_47_best) suggest the MPNN over-threaded the scaffold with glutamate. Such sequences are hyper-acidic (net charges as low as -36 across the 100 designs), which causes aggregation at physiological pH and extreme salt sensitivity in assays.
+
+**Low sequence complexity (entropy <2.5)**
+62 designs have at least one 20-residue window below 2.5 bits (random protein ~3.5 bits). The worst offenders — RFD_19_best (entropy 0.00) and RFD_106_best (0.61) — are essentially random low-complexity masking sequences that will be filtered out by standard expression filters like SEG or would fail to express as folded proteins.
+
+**Dipeptide repeats (EE×7, AA×9)**
+Repetitive di- and tri-peptide motifs cause issues with gene synthesis (primer dimer formation, hairpin formation in the gene template), ribosome stalling, and mRNA instability.
+
+### Clean designs (35/100)
+All 35 clean designs are GLMN scaffold (32) or CUL1-WHB (3). Their sequences look like natural proteins: ~9% alanine, 36-38% hydrophobic, moderate E+K (~20%), no homopolymer runs. This is expected — they are redesigns of a real human protein (GLMN/CUL1-WHB) and inherit its amino acid distribution.
+
+### Top-ranked designs that are still clean
+
+| Rank | seq_id | A% | E+K% | Hydrophob% |
+|------|--------|----|------|------------|
+| 17 | GLMN_T0.1_s13 | 8% | 21% | 37% |
+| 20 | GLMN_T0.1_s11 | 6% | 25% | 36% |
+| 22 | GLMN_T0.2_s5 | 5% | 21% | 38% |
+| 23 | GLMN_T0.3_s12 | 6% | 18% | 38% |
+| 24 | GLMN_T0.2_s14 | 8% | 24% | 35% |
+
+### Implication for next round
+RFdiffusion needs post-filtering for sequence complexity **before** spending MPNN/Boltz-2 compute:
+1. Reject any backbone where >20% of helical residues are alanine after initial MPNN pass
+2. Add an entropy filter: reject any 20-mer window with Shannon entropy <2.0 bits
+3. Add a max-run filter: reject any run ≥ 5 of the same AA
+4. Add E+K composition cap: reject if E+K > 45% of full sequence
+
+Alternatively, reduce `temperature` in ProteinMPNN to 0.05 exclusively and use a fixed AA composition prior that penalises poly-A and poly-E/K.
+
+### Script and outputs
+- Script: `sequence_composition_audit.py`
+- Figure: `sequence_composition_audit.png` (8-panel: %A, %E+K, entropy, hydrophobic, net charge, flag count, max run length, AA composition heatmap top 20)
+
+---
+
 ## Resources
 
 - Competition page: GEM x Adaptyv RBX1 Binder Design Challenge
