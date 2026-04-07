@@ -1354,7 +1354,7 @@ Alternatively, reduce `temperature` in ProteinMPNN to 0.05 exclusively and use a
 
 ### Script and outputs
 - Script: `sequence_composition_audit.py`
-- Figure: `sequence_composition_audit.png` (8-panel: %A, %E+K, entropy, hydrophobic, net charge, flag count, max run length, AA composition heatmap top 20)
+- Figures: `sequence_composition_audit.png` / `RBX1_binders_composition_plot.png` (8-panel: %A, %E+K, entropy, hydrophobic, net charge, flag count, max run length, AA composition heatmap top 20)
 
 ---
 
