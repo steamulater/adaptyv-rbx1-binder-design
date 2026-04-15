@@ -1459,3 +1459,98 @@ RFdiffusion wins on every novelty dimension (sequence novelty, structural novelt
 - Per-method summary: `novelty_dssp_summary.csv`
 - Figure: `novelty_dssp_comparison.png` (6-panel: SwissProt %id, intra-diversity, length distribution, DSSP stacked bar, AA composition, novelty vs binding scatter)
 
+
+---
+
+### Entry 014 — 2026-04-15
+
+**Status:** Complete
+**Goal:** Post-competition analysis — selection outcome, novelty score deep dive, lessons for next iteration.
+
+---
+
+#### Competition Outcome
+
+Proteinbase selected **322 designs** for wet-lab testing (BLI binding assay) out of **12,000+ submissions from 180+ designers** (~2.5% selection rate). Volume was ~6× higher than anticipated.
+
+**Our result: 0/100 designs selected.**
+
+Results to be published under ODC-ODbL open-source licence. Findings presented at GEM workshop @ ICLR 2026, Rio de Janeiro.
+
+---
+
+#### Root Cause Analysis
+
+Cross-referenced our 100 submissions against the selected 322 by sequence identity.
+
+**Novelty score is the differentiator:**
+
+| Novelty score | Selected (322) | Ours (100) |
+|--------------|---------------|-----------|
+| 4 (most novel) | 106 (33%) | **8 (8%)** |
+| 3 | 120 (37%) | **15 (15%)** |
+| 2 (least novel) | 87 (27%) | **62 (62%)** |
+
+62% of our designs scored novelty=2 — the lowest tier. The selected set skews heavily toward novelty=3 and 4.
+
+**Binding metrics were competitive — not the problem:**
+
+| Metric | Selected | Ours |
+|--------|---------|------|
+| ipTM | 0.702 | 0.683 |
+| ipLDDT | 0.654 | **0.684** ← higher |
+| Shape comp | 56.93 | 53.97 |
+| LIS | 0.355 | **0.369** ← higher |
+
+We were not beaten on predicted binding quality. We were beaten on structural novelty.
+
+**Root cause:** GLMN-based designs (46 seqs) are ProteinMPNN redesigns of a natural RBX1 binder. Proteinbase's novelty metric penalises structural similarity to known proteins — scaffold redesign inherits the parent protein's novelty ceiling. RFdiffusion generates genuinely new folds (novelty=4) but we only had 8 such designs in that tier.
+
+---
+
+#### Novelty=4 Deep Dive — The 8 That Could Have Made It
+
+All 8 are RFdiffusion de novo miniproteins. Structures downloaded to `novelty4_deep_dive/`.
+
+| Design | Rank | Length | ipTM | ipLDDT | Shape Comp | LIS |
+|--------|------|--------|------|--------|-----------|-----|
+| RFD_167 | 1 | 70 AA | 0.848 | 0.661 | 55.12 | 0.644 |
+| RFD_199 | 3 | 80 AA | 0.767 | 0.524 | 51.65 | 0.400 |
+| RFD_162 | 8 | 89 AA | 0.665 | 0.651 | 50.52 | 0.280 |
+| RFD_47  | 52 | 84 AA | 0.760 | 0.791 | 47.83 | 0.564 |
+| RFD_89  | 45 | 95 AA | 0.749 | 0.597 | 59.16 | 0.503 |
+| RFD_5   | 65 | 91 AA | 0.598 | 0.616 | 52.30 | 0.269 |
+| RFD_78  | 82 | 77 AA | 0.634 | 0.625 | 54.15 | 0.336 |
+| RFD_19  | 46 | 70 AA | 0.555 | 0.606 | 54.93 | 0.181 |
+
+Among novelty=4 designs in the selected set, mean shape complementarity was 56.93. Six of our 8 scored below that threshold. Hypothesis: shape complementarity was a secondary selection criterion within the novelty=4 tier.
+
+**Standouts:**
+- **RFD_167**: our #1 ranked design — best ipTM (0.848) and LIS (0.644). Closest to selection.
+- **RFD_89**: highest shape comp (59.16) of our novelty=4 set — would have passed a shape filter.
+- **RFD_47**: highest ipLDDT (0.791) among the 8.
+
+---
+
+#### Lessons for Next Iteration
+
+1. **Maximise RFdiffusion proportion.** GLMN/scaffold redesign caps novelty at 2. RFdiffusion is the only path to novelty=4. Next submission should be 80%+ RFdiffusion.
+
+2. **Add shape complementarity filter.** Target >58 after MPNN design. This is the likely secondary selection criterion within novelty tiers.
+
+3. **LIS as ranking metric.** LIS showed separation within our novelty=4 set (RFD_167: 0.644 vs RFD_19: 0.181). Should be included in composite score.
+
+4. **ipLDDT remains the best predictor** (confirmed by Nipah retrospective, AUROC 0.691). Our composite score already weights this — keep it.
+
+5. **Scaffold redesign is not worthless** — it is fast, reliable, and high-ipTM. But it belongs in a competition where novelty is not a filter, or where novelty is assessed by sequence identity only (not structural similarity).
+
+---
+
+#### Files
+
+| File | Description |
+|------|-------------|
+| `novelty4_deep_dive/` | Folder with 8 CIF structures + metrics.md |
+| `novelty4_deep_dive/RFD_*_complex.cif` | Boltz-2 complex predictions (binder + RBX1) |
+| `novelty4_deep_dive/metrics.md` | Per-design metrics, definitions, standout analysis |
+
