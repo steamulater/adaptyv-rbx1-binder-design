@@ -5,6 +5,129 @@
 
 ---
 
+## Entry 015 — 2026-04-21
+
+**Status:** Complete
+**Goal:** Post-competition independent synthesis selection — combine best designs from Steamulater and Protein Design for Africa (PDFA) into a 7-design panel for wet-lab validation outside the competition framework.
+
+---
+
+### Phase Summary: Entry 014 → Entry 015 (April 15–21)
+
+Following the post-competition analysis in Entry 014, two parallel activities occurred:
+
+**1. Sequence composition audit (April 7)**
+Full audit of the 100 submitted sequences across GLMN, CUL1_WHB, and RFdiffusion cohorts. Key output: cysteine distribution analysis (`cysteine_analysis.png`, `cystein_distribution_submitted.png`) and amino acid composition breakdown (`sequence_composition_audit.png`, `RBX1_binders_composition_plot.png`). No disqualifying cysteine clustering was found. GLMN scaffold designs are helical-bundle dominated as expected.
+
+**2. Social content production (April 15)**
+Carousel content prepared via `make_carousel_adaptyv.py` for public documentation of the competition run and methodology. Published on @steamulater.
+
+---
+
+### PDFA Discovery and Methodology
+
+**Protein Design for Africa (PDFA)** is a student-led group from Nigeria (co-founders: Oghenejabor Laurence Jaboro and Mcgregory Nosakhare Ogbomo). They entered the same GEM x Adaptyv RBX1 challenge and received no selections — same outcome as us.
+
+Their submitted files (`students_submission/`) include:
+- Technical report (PDF)
+- BindCraft + BoltzGen score CSVs (14 total designs)
+- PDB inputs and Adaptyv-format submission metrics
+
+**Their approach — "Strategic Truncation and Multi-Model Design":**
+
+| Parameter | Detail |
+|-----------|--------|
+| Target PDB | 3DQV (RBX1, chain A) |
+| Target regions | N-terminal domain (structured, IDRs removed) + C-terminal domain (IDRs removed) |
+| N-term tool | BindCraft + soluble MPNN, via Tamarind Bio |
+| C-term tool | BoltzGen, via Tamarind Bio |
+| Binder length | 100–250 aa |
+| Strategy variants | With hotspots and without hotspots |
+| Validation metrics | pLDDT, iPAE, pTM, shape complementarity |
+
+Key insight: they explicitly identified and removed intrinsically disordered regions (IDRs) from the target before design — an approach we did not use. This gave their design tools a cleaner binding surface to work against.
+
+**Why they were not selected:**
+Their Adaptyv platform submissions (`all_designs_metrics (1).csv`, `(2).csv`) all failed the platform's filters. Platform-scored iiptm ranged 0.08–0.35 and ipSAE=0 across all 13 submissions. The BindCraft raw scores are considerably higher (i_pTM up to 0.87) — suggesting their designs were not re-evaluated at submission scoring in a way that captured the BindCraft output properly. The same novelty issue we faced likely also applied.
+
+---
+
+### Design Pool for Synthesis Selection
+
+**Our pool (from master_sequences.csv):**
+- 48 GLMN scaffold designs — Boltz complex iptm range 0.846–0.887, all novelty=True
+- 48 CUL1_WHB designs — Boltz complex iptm range 0.41–0.761, ring_rmsd 5–6 (high drift), excluded
+
+CUL1_WHB designs were excluded: ring_rmsd 5–6 Å indicates the backbone has drifted substantially from the intended binding pose, reducing confidence in the binding mode.
+
+**PDFA pool (from BindCraft score CSVs):**
+14 designs across 5 runs; top designs by i_pTM range 0.77–0.87.
+
+---
+
+### Selection Criteria
+
+Designs selected on:
+1. **i_pTM / complex iptm ≥ 0.78** — primary confidence in predicted binding
+2. **pLDDT ≥ 0.90** — binder structural quality
+3. **i_pAE ≤ 0.27** — interface PAE (lower = more confident interface)
+4. **Shape complementarity ≥ 0.62** — geometric fit at the binding surface
+5. **ring_rmsd ≤ 1.2** (ours only) — proximity to native GLMN binding pose
+6. **Coverage of distinct binding sites** — N-terminal RBX1, C-terminal RBX1, and GLMN/CUL1 interface
+
+---
+
+### Final 7 Designs Selected for Synthesis
+
+**FASTA file:** `students_submission/final_7_selected.fasta`
+
+#### Our designs (4 — GLMN scaffold, 247 aa each)
+
+| ID | iptm | pLDDT | ring_rmsd | Note |
+|----|------|-------|-----------|------|
+| `GLMN_T0.1_s11` | **0.887** | 0.909 | 0.96 | Best overall iptm |
+| `GLMN_T0.3_s12` | 0.882 | 0.904 | 0.91 | Strong iptm + tight ring |
+| `GLMN_T0.3_s8` | 0.878 | 0.904 | **0.603** | Best ring_rmsd — closest to native GLMN pose |
+| `GLMN_T0.2_s14` | 0.879 | 0.901 | 0.915 | Different MPNN temperature; sequence diversity |
+
+All 4: scaffold=GLMN (4F52), strategy=MPNN redesign of natural CUL1-RING interface binder, novelty=True, pipeline=BindCraft/Boltz.
+
+#### PDFA designs (3 — direct RBX1 binders)
+
+| ID | i_pTM | pLDDT | i_pAE | SC | len | Target | Note |
+|----|-------|-------|-------|----|-----|--------|------|
+| `PDFA_NtermSolMPNN_s92146_mpnn17` | **0.87** | 0.91 | 0.21 | 0.66 | 234 | RBX1 N-term | Best i_pTM overall; soluble MPNN optimised |
+| `PDFA_Cterm_s252595_mpnn10` | 0.82 | **0.95** | **0.20** | 0.66 | 159 | RBX1 C-term | Best pLDDT + iPAE; shortest sequence (cost advantage) |
+| `PDFA_NtermSolMPNN2_s565603_mpnn8` | 0.84 | 0.94 | 0.21 | **0.70** | 237 | RBX1 N-term | Best shape complementarity |
+
+All 3: tool=BindCraft + soluble MPNN, target=PDB 3DQV (IDR-truncated), design via Tamarind Bio.
+
+---
+
+### Rationale for Mix
+
+Our GLMN designs are computationally stronger by iptm (~0.88 vs ~0.84) but represent a single binding mode — GLMN-mimicry at the RBX1/CUL1 interface. PDFA's designs target two independent sites on RBX1 (N-terminal and C-terminal structured domains) that our designs do not probe. If any of the GLMN designs fail to bind in BLI, the PDFA designs provide entirely orthogonal epitope coverage.
+
+The 7-design panel therefore tests:
+- GLMN interface mimicry (×4)
+- Direct RBX1 N-terminal binding (×2, from different seeds)
+- Direct RBX1 C-terminal binding (×1, shortest/cheapest)
+
+Collaboration with PDFA also creates an opportunity for continued joint work. Suggested next step: invite PDFA to co-author if any designs show activity in BLI.
+
+---
+
+### Files
+
+| File | Description |
+|------|-------------|
+| `students_submission/` | PDFA raw files, CSVs, PDB inputs, method writeup |
+| `students_submission/final_7_selected.fasta` | 7 sequences selected for synthesis, annotated |
+| `students_submission/designs_csv/` | All PDFA BindCraft + Adaptyv score files |
+| `students_submission/rbx1_pdb/` | 3DQV N-term and C-term truncated PDBs used by PDFA |
+
+---
+
 ## Project Overview
 
 Design up to 100 *de novo* protein binder sequences targeting RBX1 (Ring-Box Protein 1) for experimental validation via bio-layer interferometry at Adaptyv's Foundry.
