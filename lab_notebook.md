@@ -5,7 +5,38 @@
 
 ---
 
-## Entry 015 — 2026-04-21 (updated 2026-04-20)
+## Entry 016 — 2026-04-22
+
+**Status:** Active
+**Goal:** Submit 7-design panel to Adaptyv Bio for wet-lab validation (BLI) following direct outreach from the Adaptyv team.
+
+---
+
+### Adaptyv Bio Outreach — Official Validation Invitation
+
+On **April 17**, Tudor-Stefan Cotet (Adaptyv Bio, verified) sent a direct message via X/Twitter requesting a CSV of our top 7 designs for inclusion in an **additional experimental validation set** that Adaptyv will run.
+
+> *"Hi! Could you send me a CSV of your top 7 designs for the Adaptyv RBX1 competition? We can include yours for an additional set we'll validate"*
+
+This is unsolicited confirmation from Adaptyv that our designs are being considered for wet-lab testing — bio-layer interferometry (BLI) binding assays at their Foundry.
+
+**Contact:** tudor@adaptyvbio.com  
+**Submission:** `students_submission/adaptyv_submission_7designs.csv` sent by email (Apr 22)
+
+![Adaptyv DM from Tudor-Stefan Cotet](adaptyv_dm_validation_request.png)
+
+---
+
+### What This Means
+
+- Adaptyv will synthesize and experimentally test some or all of the 7 designs
+- BLI data (binding kinetics: k_on, k_off, K_D) will be the first experimental validation of this entire design campaign
+- The 7-design panel (3 PDFA + 2 GLMN + 1 CUL1_WHB + 1 RFdiffusion) was already prepared — CSV sent same day
+- If any designs show activity, this opens a path to co-publication with PDFA
+
+---
+
+## Entry 015 — 2026-04-21 (updated 2026-04-22)
 
 **Status:** Complete — revised after Boltz-2 standardisation
 **Goal:** Post-competition independent synthesis selection — combine best designs from Steamulater and Protein Design for Africa (PDFA) into a 7-design panel for wet-lab validation outside the competition framework.
