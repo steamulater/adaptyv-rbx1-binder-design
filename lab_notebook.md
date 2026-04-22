@@ -5,9 +5,9 @@
 
 ---
 
-## Entry 015 — 2026-04-21
+## Entry 015 — 2026-04-21 (updated 2026-04-20)
 
-**Status:** Complete
+**Status:** Complete — revised after Boltz-2 standardisation
 **Goal:** Post-competition independent synthesis selection — combine best designs from Steamulater and Protein Design for Africa (PDFA) into a 7-design panel for wet-lab validation outside the competition framework.
 
 ---
@@ -65,53 +65,87 @@ CUL1_WHB designs were excluded: ring_rmsd 5–6 Å indicates the backbone has dr
 
 ---
 
-### Selection Criteria
+### Boltz-2 Standardisation Run (2026-04-20)
 
-Designs selected on:
-1. **i_pTM / complex iptm ≥ 0.78** — primary confidence in predicted binding
-2. **pLDDT ≥ 0.90** — binder structural quality
-3. **i_pAE ≤ 0.27** — interface PAE (lower = more confident interface)
-4. **Shape complementarity ≥ 0.62** — geometric fit at the binding surface
-5. **ring_rmsd ≤ 1.2** (ours only) — proximity to native GLMN binding pose
-6. **Coverage of distinct binding sites** — N-terminal RBX1, C-terminal RBX1, and GLMN/CUL1 interface
+**Problem:** PDFA used AF2 multimer (BindCraft 4-stage) for validation; we used Boltz-2. Direct score comparison was not valid.
+
+**Solution:** Re-ran all 14 PDFA designs through Boltz-2 using identical settings to our pipeline:
+- `boltz predict <yaml> --accelerator gpu --recycling_steps 3 --sampling_steps 200 --diffusion_samples 1 --use_msa_server --no_kernels --num_workers 2`
+- Same RBX1 target sequence (108 aa, from our runs)
+- YAML format: binder chain A + RBX1 chain B
+- Run on Google Colab Pro+ A100, outputs saved to Google Drive
+
+**Result:** PDFA Boltz-2 scores are substantially higher than their AF2-reported scores. Their top 6 designs all exceed our best GLMN by Boltz-2 iptm.
+
+#### Combined Ranking — Boltz-2 iptm (all 14 PDFA + our top 4 GLMN)
+
+| Rank | Design | Source | boltz_iptm | boltz_ptm | boltz_plddt | len |
+|------|--------|--------|-----------|-----------|-------------|-----|
+| 1 | `PDFA_NtermSolMPNN2_s565603_mpnn6` | PDFA | **0.927** | — | — | 237 |
+| 2 | `PDFA_Cterm_s252595_mpnn10` | PDFA | 0.918 | — | — | 159 |
+| 3 | `PDFA_NtermSolMPNN_s92146_mpnn3` | PDFA | 0.910 | — | — | 234 |
+| 4 | `PDFA_NtermSolMPNN2_s565603_mpnn8` | PDFA | 0.898 | — | — | 237 |
+| 5 | `PDFA_Cterm_s252595_mpnn19` | PDFA | 0.894 | — | — | 159 |
+| 6 | `PDFA_NtermSolMPNN_s92146_mpnn17` | PDFA | 0.893 | — | — | 234 |
+| 7 | `GLMN_T0.1_s11` | Steamulater | 0.887 | 0.909 | 0.753 | 247 |
+| 8 | `GLMN_T0.3_s8` | Steamulater | 0.878 | 0.904 | 0.777 | 247 |
+| … | … | … | … | … | … | … |
+
+Notebook: `students_submission/boltz_pdfa_validation.ipynb`
 
 ---
 
-### Final 7 Designs Selected for Synthesis
+### Selection Criteria (revised after Boltz standardisation)
+
+Designs selected on:
+1. **boltz_iptm** — standardised predictor across all designs (primary criterion)
+2. **ring_rmsd ≤ 1.2** (ours only) — proximity to native GLMN binding pose
+3. **Coverage of distinct binding sites** — N-terminal RBX1, C-terminal RBX1, GLMN interface, and de novo miniprotein
+4. **Scaffold diversity** — include GLMN, CUL1_WHB, and RFdiffusion to represent all three design strategies
+
+---
+
+### Final 7 Designs Selected for Synthesis (Revised)
+
+**Revised ratio: 3 PDFA + 4 Steamulater (2:1:1 scaffold split)**
 
 **FASTA file:** `students_submission/final_7_selected.fasta`
 
-#### Our designs (4 — GLMN scaffold, 247 aa each)
+#### PDFA designs (3 — top 3 by Boltz-2 iptm)
 
-| ID | iptm | pLDDT | ring_rmsd | Note |
-|----|------|-------|-----------|------|
-| `GLMN_T0.1_s11` | **0.887** | 0.909 | 0.96 | Best overall iptm |
-| `GLMN_T0.3_s12` | 0.882 | 0.904 | 0.91 | Strong iptm + tight ring |
-| `GLMN_T0.3_s8` | 0.878 | 0.904 | **0.603** | Best ring_rmsd — closest to native GLMN pose |
-| `GLMN_T0.2_s14` | 0.879 | 0.901 | 0.915 | Different MPNN temperature; sequence diversity |
-
-All 4: scaffold=GLMN (4F52), strategy=MPNN redesign of natural CUL1-RING interface binder, novelty=True, pipeline=BindCraft/Boltz.
-
-#### PDFA designs (3 — direct RBX1 binders)
-
-| ID | i_pTM | pLDDT | i_pAE | SC | len | Target | Note |
-|----|-------|-------|-------|----|-----|--------|------|
-| `PDFA_NtermSolMPNN_s92146_mpnn17` | **0.87** | 0.91 | 0.21 | 0.66 | 234 | RBX1 N-term | Best i_pTM overall; soluble MPNN optimised |
-| `PDFA_Cterm_s252595_mpnn10` | 0.82 | **0.95** | **0.20** | 0.66 | 159 | RBX1 C-term | Best pLDDT + iPAE; shortest sequence (cost advantage) |
-| `PDFA_NtermSolMPNN2_s565603_mpnn8` | 0.84 | 0.94 | 0.21 | **0.70** | 237 | RBX1 N-term | Best shape complementarity |
+| ID | boltz_iptm | len | Target | Note |
+|----|-----------|-----|--------|------|
+| `PDFA_NtermSolMPNN2_s565603_mpnn6` | **0.927** | 237 | RBX1 N-term | #1 combined ranking |
+| `PDFA_Cterm_s252595_mpnn10` | 0.918 | 159 | RBX1 C-term | #2 combined; shortest/cheapest |
+| `PDFA_NtermSolMPNN_s92146_mpnn3` | 0.910 | 234 | RBX1 N-term | #3 combined; different MPNN seed from mpnn17 |
 
 All 3: tool=BindCraft + soluble MPNN, target=PDB 3DQV (IDR-truncated), design via Tamarind Bio.
 
+#### Steamulater designs (4 — 2:1:1 scaffold split)
+
+| ID | boltz_iptm | scaffold | len | Note |
+|----|-----------|----------|-----|------|
+| `GLMN_T0.1_s11` | 0.887 | GLMN | 247 | Best iptm; ring_rmsd=0.96 |
+| `GLMN_T0.3_s8` | 0.878 | GLMN | 247 | Best ring_rmsd (0.603) — closest to native pose |
+| `CUL1_WHB_T0.2_s16` | 0.761 | CUL1_WHB | 72 | Best CUL1_WHB; probes WHB binding surface |
+| `RFD_167_best` | 0.848 | RFdiffusion | 70 | Best de novo miniprotein; novelty=4; 70 aa |
+
 ---
 
-### Rationale for Mix
+### Rationale for Revised Mix
 
-Our GLMN designs are computationally stronger by iptm (~0.88 vs ~0.84) but represent a single binding mode — GLMN-mimicry at the RBX1/CUL1 interface. PDFA's designs target two independent sites on RBX1 (N-terminal and C-terminal structured domains) that our designs do not probe. If any of the GLMN designs fail to bind in BLI, the PDFA designs provide entirely orthogonal epitope coverage.
+After Boltz-2 standardisation, PDFA's top 6 designs outperform our best GLMN. Their designs are the most computationally promising and should constitute the plurality of the synthesis panel. The 3:4 ratio reflects this while preserving our full scaffold diversity:
 
-The 7-design panel therefore tests:
-- GLMN interface mimicry (×4)
-- Direct RBX1 N-terminal binding (×2, from different seeds)
-- Direct RBX1 C-terminal binding (×1, shortest/cheapest)
+- **GLMN ×2**: represent the GLMN-mimicry binding mode; include both best-iptm and best-ring_rmsd for diversity within the scaffold
+- **CUL1_WHB ×1**: probes the WHB subdomain binding surface, an independent epitope not covered by GLMN or PDFA designs
+- **RFdiffusion ×1**: our highest-novelty design class; validates whether de novo miniproteins (<100 aa) can achieve binding at the RBX1 surface
+
+The panel tests four structurally distinct binding modes across two RBX1 surfaces:
+1. PDFA N-terminal RBX1 (×2 — mpnn6 and mpnn3, different seeds)
+2. PDFA C-terminal RBX1 (×1)
+3. GLMN interface mimicry (×2)
+4. WHB subdomain (×1)
+5. De novo miniprotein (×1)
 
 Collaboration with PDFA also creates an opportunity for continued joint work. Suggested next step: invite PDFA to co-author if any designs show activity in BLI.
 
@@ -122,7 +156,9 @@ Collaboration with PDFA also creates an opportunity for continued joint work. Su
 | File | Description |
 |------|-------------|
 | `students_submission/` | PDFA raw files, CSVs, PDB inputs, method writeup |
-| `students_submission/final_7_selected.fasta` | 7 sequences selected for synthesis, annotated |
+| `students_submission/final_7_selected.fasta` | **Revised** 7 sequences: 3 PDFA top (Boltz) + 2 GLMN + 1 CUL1_WHB + 1 RFdiffusion |
+| `students_submission/boltz_inputs/` | 14 YAML files for Boltz-2 standardisation run |
+| `students_submission/boltz_pdfa_validation.ipynb` | Colab notebook: Boltz-2 on all 14 PDFA designs, combined ranking |
 | `students_submission/designs_csv/` | All PDFA BindCraft + Adaptyv score files |
 | `students_submission/rbx1_pdb/` | 3DQV N-term and C-term truncated PDBs used by PDFA |
 
