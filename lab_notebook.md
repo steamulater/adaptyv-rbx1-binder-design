@@ -1200,6 +1200,15 @@ Ranked by composite3 score. Top 5: RFD_167, RFD_114, RFD_199, RFD_97, RFD_1.
 
 ## Sequences Submitted
 
+> 📱 **Reel — The Challenge & Submission (Part 1)**
+> Posted 2026-04-17 · [@steamulater](https://www.instagram.com/steamulater/)
+>
+> <https://www.instagram.com/reel/DWbgmXdjkjI/>
+>
+> Covers: RBX1 biology, design pipeline (RFdiffusion → ProteinMPNN → Boltz-2), 100 sequences submitted, competition context.
+
+---
+
 **Total: 100 | File: `final_submission_v2.fasta` | Ranked by composite3 = 0.4×ipTM + 0.3×ipLDDT + 0.3×norm_ipSAE**
 
 | Rank | Seq ID | Batch | Scaffold | Length (AA) | ipTM | ipLDDT | ipSAE (Å) | Composite |
@@ -1660,6 +1669,15 @@ RFdiffusion wins on every novelty dimension (sequence novelty, structural novelt
 ---
 
 #### Competition Outcome
+
+> 📱 **Reel — Designs Not Selected: The Post-Mortem (Part 2)**
+> Posted 2026-04-17 · [@steamulater](https://www.instagram.com/steamulater/)
+>
+> <https://www.instagram.com/p/DXOzKGQDkZQ/>
+>
+> Covers: 0/100 selected, novelty score root cause, binding metrics comparison, lessons for next iteration.
+
+---
 
 Proteinbase selected **322 designs** for wet-lab testing (BLI binding assay) out of **12,000+ submissions from 180+ designers** (~2.5% selection rate). Volume was ~6× higher than anticipated.
 
