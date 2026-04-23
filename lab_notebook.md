@@ -1744,3 +1744,107 @@ Among novelty=4 designs in the selected set, mean shape complementarity was 56.9
 | `novelty4_deep_dive/RFD_*_complex.cif` | Boltz-2 complex predictions (binder + RBX1) |
 | `novelty4_deep_dive/metrics.md` | Per-design metrics, definitions, standout analysis |
 
+
+---
+
+### Entry 015 — 2026-04-23
+
+**Status:** In progress
+**Goal:** Full project state-of-play recap — competition outcome, social content, publication plan, pending items.
+
+---
+
+#### Project Status Overview
+
+| Stream | Status | Notes |
+|--------|--------|-------|
+| Wet lab (Adaptyv) | Awaiting results | BLI binding assay underway on selected 322 designs |
+| Post-competition analysis | Complete | Entry 014 — novelty score root cause, 8 novelty=4 deep dive |
+| Social content | Complete | 16-slide carousel, 2 reel transcripts, captions |
+| Publication writeup | In progress | `submission_writeup.md` complete; full paper pending |
+| Next iteration design | Planned | 80%+ RFdiffusion, shape comp filter >58 |
+
+---
+
+#### Competition Recap (as of 2026-04-23)
+
+**What happened:**
+- Submitted 100 sequences (46 GLMN, 7 CUL1-WHB, 47 RFdiffusion) by March 26, 2026 deadline
+- 322 of 12,000+ designs selected for wet lab (~2.5% rate)
+- 0 of our 100 selected
+- Root cause: 62% of our designs scored novelty=2 (scaffold redesign ceiling); selected set was 33% novelty=4
+- Binding metrics were competitive or better — not the issue
+
+**Wet lab status:**
+- Expression testing + BLI binding assay underway at Adaptyv Foundry
+- Results to be published on Proteinbase under ODC-ODbL open-source licence
+- Presented at GEM workshop @ ICLR 2026, Rio de Janeiro
+- We do not have a protein in this round but will have access to all 322 results when published — directly useful for calibrating next iteration
+
+---
+
+#### Publication / Writeup
+
+`submission_writeup.md` documents the full methods, design rationale, scoring approach, and Nipah retrospective analysis. This is the seed document for a full write-up.
+
+**Planned paper structure (draft):**
+
+1. **Abstract** — de novo RBX1 binder design using RFdiffusion + ProteinMPNN; Nipah-derived evidence-based scoring; post-competition novelty analysis
+2. **Introduction** — RBX1 biology, CRL complex, therapeutic rationale, competitive protein design context
+3. **Methods** — RFdiffusion contig/hotspot setup, ProteinMPNN masked/free design, Boltz-2 validation protocol, ipSAE computation, DIAMOND novelty screen, Nipah retrospective AUROC analysis
+4. **Results** — 3 scaffold strategies, score distributions, Boltz-2 RMSD analysis, Nipah predictor ranking, final 100 selection
+5. **Post-competition analysis** — selection outcome, novelty score breakdown, binding metric comparison, novelty=4 deep dive (8 designs)
+6. **Discussion** — scaffold redesign vs de novo; shape complementarity as secondary filter hypothesis; lessons for next iteration
+7. **Conclusion**
+
+**To be added** *(pending user update):*
+- [ ] PDF draft / journal target
+- [ ] Co-authors / acknowledgements
+- [ ] Supplementary data plan
+- [ ] Timeline
+
+---
+
+#### Social Content
+
+All assets in `social/`. Ready to post.
+
+| Asset | Status |
+|-------|--------|
+| 16-slide carousel (1080×1350px) | ✓ Ready |
+| Reel 01 transcript — "100 proteins, 0 selected" | ✓ Ready |
+| Reel 02 transcript — "5 tools, 1 target, 0 chill" | ✓ Ready |
+| Captions (carousel + 2 reels) | ✓ Written |
+
+**Posting sequence:** Carousel first → Reel 01 (hero) → Reel 02 (follow-up, tools deep dive)
+
+---
+
+#### Novelty=4 Deep Dive
+
+8 RFdiffusion miniproteins with maximum structural novelty. Structures + metrics in `novelty4_deep_dive/`.
+
+Best candidate: **RFD_167** (70 AA, ipTM 0.848, LIS 0.644) — our #1 ranked design overall. If any single design had a path to selection, this was it.
+
+---
+
+#### Next Iteration Planning
+
+Key changes for Round 2:
+
+| Change | Rationale |
+|--------|-----------|
+| 80%+ RFdiffusion designs | Only path to novelty=4 at scale |
+| Shape complementarity filter >58 | Secondary selection criterion within novelty tiers |
+| LIS in composite score | Better separation within novelty=4 tier |
+| Drop monomer pTM filter | AUROC 0.501 — random; cost us 25 sequences |
+| Submit 500+ designs | 6× competition volume was unexpected; need more coverage |
+
+---
+
+#### Pending
+
+- [ ] Wet lab results from Proteinbase (publication date TBD)
+- [ ] PDF draft / paper submission target *(update pending)*
+- [ ] Round 2 design run
+
