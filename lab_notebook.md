@@ -36,6 +36,29 @@ This is unsolicited confirmation from Adaptyv that our designs are being conside
 
 ---
 
+### Adaptyv Foundry Dashboard — 2026-04-23
+
+Experiment confirmed live in the Adaptyv Foundry system as of **April 23, 2026**.
+
+![Adaptyv Foundry Dashboard — Steamulater team, 2026-04-23](students_submission/adaptyv_foundry_dashboard_2026-04-23.png)
+
+| Field | Value |
+|-------|-------|
+| Experiment | GEM x Adaptyv: RBX1 Binder Design Competition — Steamulater team |
+| Type | Affinity Characterization |
+| Status | **Waiting for materials** |
+| Sequences | **7** |
+| Avg. Length | **181 AA** |
+| Target | Human RBX1 |
+| Replicates | 3 |
+| Antigen concentrations | 1000 / 316.2 / 100 / 31.2 / 0 nM |
+
+**Update (11 hours before screenshot):** Status changed to "Waiting for materials" — meaning the order has been placed and Adaptyv are waiting on protein synthesis before the BLI assay can start.
+
+**What this means:** The 7 designs have been accepted into the Foundry pipeline. The next status transition will be "In Progress" once materials arrive. BLI binding data (K_D, k_on, k_off) expected within weeks.
+
+---
+
 ## Entry 015 — 2026-04-21 (updated 2026-04-22)
 
 **Status:** Complete — revised after Boltz-2 standardisation
