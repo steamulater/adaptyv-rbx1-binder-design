@@ -75,6 +75,8 @@ As a proxy, the peak BLI response at the highest analyte concentration (1000 nM)
 | `CUL1_WHB_T0.2_s16` | 0.061 | Low |
 | `RFD_167_best` | **0.022** | Very low — likely poor expression/folding |
 
+![Adaptyv Foundry — Binding Affinity plot with assay loading overlay, 2026-06-03](adaptyv_foundry_assay_loading_2026-06-03.png)
+
 For non-binders this metric cannot distinguish between poor expression and good expression with no binding. The true loading values from the Adaptyv dashboard can be obtained by contacting tudor@adaptyvbio.com for the raw loading step traces. `RFD_167_best` stands out with the lowest peak response of any sequence, consistent with the hypothesis that the de novo 70 aa miniprotein failed to fold or express under assay conditions.
 
 ---
