@@ -59,12 +59,33 @@ Key observations:
 
 ---
 
+### Assay Loading — Expression Proxy
+
+The Adaptyv Foundry dashboard displays an assay loading indicator (High / Medium / Low colour overlay) derived from the BLI tip loading step — the signal achieved when each binder protein is immobilised on the biosensor tip before the RBX1 analyte is introduced. This loading step data is captured internally by Adaptyv and is not included in the downloadable data package; it is also not exposed via the Foundry API (`metadata: {}` on all result objects).
+
+As a proxy, the peak BLI response at the highest analyte concentration (1000 nM) was extracted from the raw association traces. For the binding hit this reflects genuine binding; for non-binders it approximates noise/non-specific drift and provides a rough rank of tip availability.
+
+| Design | Peak response @ 1000 nM (nm, mean across replicates) | Inferred loading |
+|--------|------------------------------------------------------|-----------------|
+| `PDFA_Cterm_s252595_mpnn10` | **1.394** | High — confirmed expression + binding |
+| `PDFA_NtermSolMPNN_s92146_mpnn3` | 0.139 | Low (noise level) |
+| `GLMN_T0.3_s8` | 0.092 | Low |
+| `PDFA_NtermSolMPNN2_s565603_mpnn6` | 0.090 | Low |
+| `GLMN_T0.1_s11` | 0.074 | Low |
+| `CUL1_WHB_T0.2_s16` | 0.061 | Low |
+| `RFD_167_best` | **0.022** | Very low — likely poor expression/folding |
+
+For non-binders this metric cannot distinguish between poor expression and good expression with no binding. The true loading values from the Adaptyv dashboard can be obtained by contacting tudor@adaptyvbio.com for the raw loading step traces. `RFD_167_best` stands out with the lowest peak response of any sequence, consistent with the hypothesis that the de novo 70 aa miniprotein failed to fold or express under assay conditions.
+
+---
+
 ### Implications for next round
 
 - **PDFA_Cterm_s252595_mpnn10** is a validated hit — K_D ~185 nM. Priority target for affinity maturation.
 - The C-terminal RBX1 surface should be the focus of any next-round design campaign. The PDFA approach (BindCraft on IDR-truncated target, BoltzGen, soluble MPNN) is validated.
 - GLMN scaffold strategy needs re-evaluation. Options: use higher sequence identity to native Glomulin, or abandon in favour of the C-terminal epitope.
 - Consider contacting PDFA (Oghenejabor Laurence Jaboro, Mcgregory Nosakhare Ogbomo) to share results and discuss co-authorship if a manuscript is pursued.
+- Request raw loading step traces from Adaptyv (tudor@adaptyvbio.com) to obtain true expression proxies for all 7 designs.
 
 ---
 
