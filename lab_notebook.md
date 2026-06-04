@@ -79,6 +79,52 @@ For non-binders this metric cannot distinguish between poor expression and good 
 
 ---
 
+### Comparison to Proteinbase RBX1 Competition Dataset
+
+Source: `proteinbase_collection_gem-x-adaptyv-rbx1-binder-design-competition-results.csv` (322 entries, all GEM × Adaptyv RBX1 competition submissions).
+
+#### Hit rate in the full competition
+
+| Metric | Count | Rate |
+|--------|-------|------|
+| Total entries | 322 | — |
+| Expressed | 255 | 79.2% |
+| Binding | 9 | 2.8% |
+| Our panel binding | 1/7 | 14.3% |
+
+Our panel hit rate (14.3%) is **5× the competition average** (2.8%).
+
+#### All 10 confirmed RBX1 binders with measured K_D
+
+Only 10 designs across the entire competition have a measured K_D — 9 from the Proteinbase dataset plus our BLI result.
+
+| Rank | Design | K_D | Source |
+|------|--------|-----|--------|
+| 1 | BL_s53042 | **25.7 nM** | Competition |
+| 2 | rbx1_ab_l214_41708_l0_b3 | 85.1 nM | Competition |
+| 3 | rbx1_a2_l101_403247_l0_b8 | 165.3 nM | Competition |
+| 4 | fusion_cterm_..._var009 | 179.1 nM | Competition |
+| **5** | **`PDFA_Cterm_s252595_mpnn10`** | **185.0 nM** | **This work (BLI)** |
+| 6 | design0 | 186.1 nM | Competition |
+| 7 | Liza_idr_binder_finalrank_0 | 195.3 nM | Competition |
+| 8 | Liza_idr_binder_finalrank_1 | 420.9 nM | Competition |
+| 9 | design_11_m_1_full_cycle_5 | 570.2 nM | Competition |
+| 10 | Liza_idr_binder_finalrank_4 | 3215.4 nM | Competition |
+
+Our binder ranks **5th of 10** (median of the confirmed binders). The competition's best is BL_s53042 at 25.7 nM. Six of the 10 confirmed binders cluster between 85–195 nM; our 185 nM is solidly within that group.
+
+Note: competition KD values were measured by SPR; ours by BLI — direct numerical comparison should be interpreted with that assay difference in mind.
+
+![K_D comparison — all 10 confirmed RBX1 binders](rbx1_kd_comparison.png)
+
+#### Computational metrics
+
+The Proteinbase dataset used ESMFold + ProteinMPNN scoring only — no Boltz-2 iptm values are present, so a direct computational score comparison against our designs is not possible from this dataset.
+
+ESMFold pLDDT across the 322 competition entries: mean 74.3%, median 80.2% (range 33.9–91.4%).
+
+---
+
 ### Implications for next round
 
 - **PDFA_Cterm_s252595_mpnn10** is a validated hit — K_D ~185 nM. Priority target for affinity maturation.
