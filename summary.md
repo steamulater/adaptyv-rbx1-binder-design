@@ -24,7 +24,7 @@ Human RBX1 (UniProt P62877) — catalytic RING-H2 subunit of Cullin-RING E3 ubiq
 
 Post-competition, the top 7 designs were co-selected with **Protein Design for Africa (PDFA)** — a Nigerian student group who applied BindCraft + BoltzGen on IDR-truncated RBX1 (PDB 3DQV). All 14 PDFA designs were re-scored on Boltz-2 for a standardised comparison; their top 6 exceeded our best GLMN design.
 
-**Final 7-design panel** (3 PDFA + 2 GLMN + 1 CUL1_WHB + 1 RFdiffusion) submitted to Adaptyv Foundry on April 22, 2026 following a direct invitation from Tudor-Stefan Cotet (tudor@adaptyvbio.com).
+**Final 7-design panel** (3 PDFA + 2 GLMN + 1 CUL1_WHB + 1 RFdiffusion) submitted to Adaptyv Foundry on April 22, 2026 following a direct invitation from Tudor-Stefan Cotet ([@cotetTudor](https://x.com/cotetTudor)).
 
 ---
 
