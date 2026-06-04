@@ -5,6 +5,69 @@
 
 ---
 
+## Entry 017 — 2026-06-03
+
+**Status:** Complete — BLI results received from Adaptyv Foundry
+**Goal:** Record experimental validation results for the 7-design panel submitted to Adaptyv Bio (experiment SUL-001-002).
+
+---
+
+### BLI Results — Adaptyv Foundry (experiment `019dba0b-d3ea-b469-836a-472c9aa6c134`)
+
+Results retrieved via Adaptyv Foundry API (`GET /experiments/{id}/results`). Experiment status: **done**, results_status: **all**. Assay: affinity characterization, 3 replicates, antigen concentrations 0–1000 nM.
+
+#### Summary table
+
+| Design | Source | Scaffold | Boltz-2 iptm | BLI result | K_D mean | k_on (M⁻¹s⁻¹) | k_off (s⁻¹) |
+|--------|--------|----------|-------------|------------|----------|----------------|-------------|
+| `PDFA_Cterm_s252595_mpnn10` | PDFA | BindCraft + SolMPNN | 0.918 | **medium binder** | **185 nM** | 54,591 | 9.03×10⁻³ |
+| `PDFA_NtermSolMPNN2_s565603_mpnn6` | PDFA | BindCraft + SolMPNN | 0.927 | no binding | — | — | — |
+| `PDFA_NtermSolMPNN_s92146_mpnn3` | PDFA | BindCraft + SolMPNN | 0.910 | no binding | — | — | — |
+| `GLMN_T0.1_s11` | Steamulater | GLMN scaffold | 0.887 | no binding | — | — | — |
+| `GLMN_T0.3_s8` | Steamulater | GLMN scaffold | 0.878 | no binding | — | — | — |
+| `RFD_167_best` | Steamulater | RFdiffusion de novo | 0.848 | no binding | — | — | — |
+| `CUL1_WHB_T0.2_s16` | Steamulater | CUL1_WHB scaffold | 0.761 | no binding | — | — | — |
+
+#### PDFA_Cterm_s252595_mpnn10 — replicate detail
+
+| Replicate | K_D | k_on (M⁻¹s⁻¹) | k_off (s⁻¹) | Result |
+|-----------|-----|----------------|-------------|--------|
+| 1 | 144 nM | 81,910 | 1.18×10⁻² | medium |
+| 2 | 126 nM | 50,767 | 6.38×10⁻³ | medium |
+| 3 | 286 nM | 31,098 | 8.89×10⁻³ | medium |
+| **Mean** | **185 nM** | **54,591** | **9.03×10⁻³** | **medium** |
+
+K_D log std = 0.156 (low replicate variance — consistent binding signal).
+
+---
+
+### Interpretation
+
+**1 of 7 designs binds.** `PDFA_Cterm_s252595_mpnn10` achieves a K_D of ~185 nM against RBX1 — a confirmed mid-nanomolar binder. This is the first experimental validation of the entire design campaign.
+
+Key observations:
+
+- **The C-terminal binder works; the N-terminal binders did not.** Both PDFA N-terminal designs (mpnn6 at Boltz iptm 0.927, mpnn3 at 0.910) showed no binding despite being ranked #1 and #3 overall by Boltz-2. The C-terminal design (mpnn10, iptm 0.918, ranked #2) is the sole hit. This suggests the C-terminal RBX1 surface (IDR-truncated 3DQV C-terminal domain) is the more accessible or druggable epitope in the experimental context.
+
+- **GLMN scaffold designs did not bind.** Neither GLMN_T0.1_s11 nor GLMN_T0.3_s8 showed activity despite strong Boltz-2 iptm (0.887 and 0.878) and low ring_rmsd. This may reflect the difficulty of recapitulating Glomulin's binding mode with a fully redesigned sequence — Glomulin relies on a large, flat interface that may require near-native sequence identity to function. Alternatively, the RING-H2 face may be occluded or conformationally dynamic under BLI conditions.
+
+- **RFdiffusion de novo miniprotein did not bind.** RFD_167_best (iptm 0.848, 70 aa) showed no activity. De novo miniproteins at this size remain difficult to validate experimentally — expression, folding, and solubility under assay conditions are likely confounders.
+
+- **CUL1_WHB scaffold did not bind.** CUL1_WHB_T0.2_s16 (iptm 0.761, ring_rmsd 5–6 Å) was the weakest prediction in the panel and confirmed as non-binding. High ring_rmsd was an early warning sign.
+
+- **Boltz-2 iptm does not cleanly rank experimental outcomes.** The highest-iptm design (mpnn6, 0.927) did not bind; the binding design (mpnn10, 0.918) ranked 2nd. Within the PDFA cohort, Boltz-2 did not distinguish the functional hit. This is consistent with the Nipah retrospective (ipTM AUROC ~0.60) — iptm is a necessary but not sufficient filter.
+
+---
+
+### Implications for next round
+
+- **PDFA_Cterm_s252595_mpnn10** is a validated hit — K_D ~185 nM. Priority target for affinity maturation.
+- The C-terminal RBX1 surface should be the focus of any next-round design campaign. The PDFA approach (BindCraft on IDR-truncated target, BoltzGen, soluble MPNN) is validated.
+- GLMN scaffold strategy needs re-evaluation. Options: use higher sequence identity to native Glomulin, or abandon in favour of the C-terminal epitope.
+- Consider contacting PDFA (Oghenejabor Laurence Jaboro, Mcgregory Nosakhare Ogbomo) to share results and discuss co-authorship if a manuscript is pursued.
+
+---
+
 ## Entry 016 — 2026-04-22
 
 **Status:** Active
