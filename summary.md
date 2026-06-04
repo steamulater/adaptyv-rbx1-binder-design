@@ -82,12 +82,23 @@ Of 322 entries, only 10 have a measured K_D. Our binder ranks **5th** (median of
 
 1. **Affinity maturation** of `PDFA_Cterm_s252595_mpnn10` (185 nM → target <25 nM, the competition best)
 2. **Focus next design round on C-terminal RBX1 surface** using BindCraft + BoltzGen pipeline (PDFA approach validated)
-3. **Request loading step traces** from Adaptyv (tudor@adaptyvbio.com) for expression QC on all 7 designs
+3. **Request loading step traces** from Adaptyv Foundry for expression QC on all 7 designs
 4. **Contact PDFA** (Oghenejabor Laurence Jaboro, Mcgregory Nosakhare Ogbomo) re: co-authorship if manuscript pursued
 
 ---
 
 ## References
+
+### Methods
+
+| Tool | Citation |
+|------|----------|
+| RFdiffusion | Watson J.L. et al. "De novo design of protein structure and function with RFdiffusion." *Nature* 620, 1089–1100 (2023). https://doi.org/10.1038/s41586-023-06415-8 |
+| ProteinMPNN | Dauparas J. et al. "Robust deep learning–based protein sequence design using ProteinMPNN." *Science* 378, 49–56 (2022). https://doi.org/10.1126/science.add2187 |
+| Boltz-2 | Wohlwend J. et al. "Boltz-1: Democratizing Biomolecular Interaction Modeling." *bioRxiv* (2024). https://doi.org/10.1101/2024.11.19.624167 |
+| BindCraft | Pacesa M. et al. "BindCraft: one-shot protein binder design using AlphaFold2." *Nature* (2025). https://doi.org/10.1038/s41586-025-08741-7 |
+
+### Data & Lab Records
 
 | Document | Location |
 |----------|----------|
@@ -96,7 +107,6 @@ Of 322 entries, only 10 have a measured K_D. Our binder ranks **5th** (median of
 | PDFA method writeup | `students_submission/Protein design for africa, method write up.pdf` |
 | Boltz-2 PDFA standardisation notebook | `students_submission/boltz_pdfa_validation.ipynb` |
 | Final 7 sequences (FASTA) | `students_submission/final_7_selected.fasta` |
-| Adaptyv submission CSV | `students_submission/adaptyv_submission_7designs.csv` |
-| BLI raw data package | `students_submission/` (downloaded from Adaptyv Foundry SUL-001-002) |
-| Proteinbase RBX1 competition dataset | `~/Downloads/proteinbase_collection_gem-x-adaptyv-rbx1-binder-design-competition-results.csv` |
+| BLI raw data package | Adaptyv Foundry experiment SUL-001-002 |
+| Proteinbase RBX1 competition dataset | https://proteinbase.com/collections/gem-x-adaptyv-rbx1-binder-design-competition-results |
 | ProteWorks Studio sprint notes | `proteworks_studio/lab_notebook.md` |
