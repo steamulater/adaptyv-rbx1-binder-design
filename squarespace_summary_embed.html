@@ -1,0 +1,239 @@
+<style>
+  .rbx1-summary {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    max-width: 820px;
+    margin: 0 auto;
+    color: #1a1a1a;
+    line-height: 1.65;
+    font-size: 15px;
+  }
+  .rbx1-summary h1 {
+    font-size: 1.5em;
+    font-weight: 700;
+    margin-bottom: 2px;
+    color: #111;
+  }
+  .rbx1-summary .meta {
+    font-size: 0.82em;
+    color: #666;
+    margin-bottom: 28px;
+    line-height: 1.8;
+  }
+  .rbx1-summary h2 {
+    font-size: 1.05em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #444;
+    margin: 32px 0 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .rbx1-summary h3 {
+    font-size: 0.95em;
+    font-weight: 600;
+    color: #333;
+    margin: 20px 0 6px;
+  }
+  .rbx1-summary table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88em;
+    margin: 12px 0 20px;
+  }
+  .rbx1-summary th {
+    background: #f4f4f4;
+    text-align: left;
+    padding: 7px 10px;
+    font-weight: 600;
+    border-bottom: 2px solid #ddd;
+    white-space: nowrap;
+  }
+  .rbx1-summary td {
+    padding: 6px 10px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+  }
+  .rbx1-summary tr.hit td {
+    background: #fff8f0;
+    font-weight: 600;
+  }
+  .rbx1-summary .hit-badge {
+    display: inline-block;
+    background: #E05C3A;
+    color: white;
+    font-size: 0.78em;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+  .rbx1-summary .chart-img {
+    width: 100%;
+    max-width: 720px;
+    display: block;
+    margin: 16px auto;
+    border-radius: 4px;
+    border: 1px solid #e8e8e8;
+  }
+  .rbx1-summary .img-caption {
+    text-align: center;
+    font-size: 0.8em;
+    color: #888;
+    margin-top: -8px;
+    margin-bottom: 20px;
+  }
+  .rbx1-summary .stat-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 14px 0;
+  }
+  .rbx1-summary .stat-box {
+    flex: 1;
+    min-width: 140px;
+    background: #f8f8f8;
+    border-radius: 6px;
+    padding: 12px 16px;
+    text-align: center;
+  }
+  .rbx1-summary .stat-box .val {
+    font-size: 1.6em;
+    font-weight: 700;
+    color: #E05C3A;
+    display: block;
+    line-height: 1.2;
+  }
+  .rbx1-summary .stat-box .lbl {
+    font-size: 0.78em;
+    color: #666;
+    margin-top: 3px;
+    display: block;
+  }
+  .rbx1-summary ul {
+    padding-left: 18px;
+    margin: 8px 0 16px;
+  }
+  .rbx1-summary li {
+    margin-bottom: 6px;
+    font-size: 0.92em;
+  }
+  .rbx1-summary .ref-table td {
+    font-size: 0.82em;
+    color: #555;
+  }
+  .rbx1-summary .note {
+    font-size: 0.82em;
+    color: #888;
+    font-style: italic;
+    margin-top: 4px;
+  }
+  .rbx1-summary code {
+    background: #f2f2f2;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 0.88em;
+    font-family: "SF Mono", "Fira Mono", monospace;
+  }
+  .rbx1-summary hr {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 32px 0;
+  }
+</style>
+
+<div class="rbx1-summary">
+
+  <h1>RBX1 Binder Design — Summary Report</h1>
+  <div class="meta">
+    <strong>Team:</strong> Steamulater × Protein Design for Africa (PDFA)<br>
+    <strong>Competition:</strong> GEM × Adaptyv Bio RBX1 Binder Design Challenge · deadline March 26, 2026<br>
+    <strong>Validation:</strong> Adaptyv Foundry BLI assay, experiment SUL-001-002 · completed June 2026
+  </div>
+
+  <h2>Target</h2>
+  <p>Human RBX1 (UniProt P62877) — catalytic RING-H2 subunit of Cullin-RING E3 ubiquitin ligase complexes. Directs ubiquitination of ~20% of cellular proteins; dysregulated in cancer. Primary epitope: E2-binding surface on the RING-H2 domain (residues 45–90).</p>
+
+  <h2>Design Campaign</h2>
+  <p>100 sequences submitted across three parallel strategies, with a post-competition collaboration with <strong>Protein Design for Africa (PDFA)</strong> — a student group from Nigeria who applied BindCraft + BoltzGen on IDR-truncated RBX1.</p>
+
+  <table>
+    <tr><th>Strategy</th><th>Tool</th><th>Sequences</th><th>Boltz-2 iptm range</th></tr>
+    <tr><td>De novo backbone</td><td>RFdiffusion + ProteinMPNN</td><td>47</td><td>0.710–0.910</td></tr>
+    <tr><td>GLMN scaffold redesign (PDB 4F52)</td><td>ProteinMPNN</td><td>46</td><td>0.846–0.887</td></tr>
+    <tr><td>CUL1 WHB scaffold (PDB 1LDJ)</td><td>ProteinMPNN</td><td>7</td><td>0.41–0.761</td></tr>
+  </table>
+
+  <h2>Experimental Results — BLI (Adaptyv Foundry)</h2>
+  <p>Affinity characterisation by bio-layer interferometry · 3 replicates · 5 antigen concentrations (0–1000 nM).</p>
+
+  <table>
+    <tr><th>Design</th><th>Source</th><th>Boltz-2 iptm</th><th>K<sub>D</sub></th><th>Result</th></tr>
+    <tr class="hit">
+      <td><code>PDFA_Cterm_s252595_mpnn10</code></td><td>PDFA</td><td>0.918</td><td><strong>185 nM</strong></td>
+      <td><span class="hit-badge">Binder</span></td>
+    </tr>
+    <tr><td><code>PDFA_NtermSolMPNN2_s565603_mpnn6</code></td><td>PDFA</td><td>0.927</td><td>—</td><td>No binding</td></tr>
+    <tr><td><code>PDFA_NtermSolMPNN_s92146_mpnn3</code></td><td>PDFA</td><td>0.910</td><td>—</td><td>No binding</td></tr>
+    <tr><td><code>GLMN_T0.1_s11</code></td><td>Steamulater</td><td>0.887</td><td>—</td><td>No binding</td></tr>
+    <tr><td><code>GLMN_T0.3_s8</code></td><td>Steamulater</td><td>0.878</td><td>—</td><td>No binding</td></tr>
+    <tr><td><code>RFD_167_best</code></td><td>Steamulater</td><td>0.848</td><td>—</td><td>No binding</td></tr>
+    <tr><td><code>CUL1_WHB_T0.2_s16</code></td><td>Steamulater</td><td>0.761</td><td>—</td><td>No binding</td></tr>
+  </table>
+
+  <h3>PDFA_Cterm_s252595_mpnn10 — replicate kinetics</h3>
+  <table>
+    <tr><th>Replicate</th><th>K<sub>D</sub></th><th>k<sub>on</sub> (M⁻¹s⁻¹)</th><th>k<sub>off</sub> (s⁻¹)</th></tr>
+    <tr><td>1</td><td>144 nM</td><td>81,910</td><td>1.18×10⁻²</td></tr>
+    <tr><td>2</td><td>126 nM</td><td>50,767</td><td>6.38×10⁻³</td></tr>
+    <tr><td>3</td><td>286 nM</td><td>31,098</td><td>8.89×10⁻³</td></tr>
+    <tr><td><strong>Mean</strong></td><td><strong>185 nM</strong></td><td><strong>54,591</strong></td><td><strong>9.03×10⁻³</strong></td></tr>
+  </table>
+  <p class="note">K<sub>D</sub> log std = 0.156 — consistent signal across all 3 replicates.</p>
+
+  <img class="chart-img" src="https://raw.githubusercontent.com/steamulater/adaptyv-rbx1-binder-design/main/adaptyv_foundry_assay_loading_2026-06-03.png" alt="Adaptyv Foundry binding affinity and assay loading overlay">
+  <p class="img-caption">Adaptyv Foundry dashboard — binding affinity with assay loading colour overlay</p>
+
+  <h2>Context: Full Competition (322 entries)</h2>
+
+  <div class="stat-row">
+    <div class="stat-box"><span class="val">1/7</span><span class="lbl">Our hit rate (14.3%)</span></div>
+    <div class="stat-box"><span class="val">2.8%</span><span class="lbl">Competition avg hit rate</span></div>
+    <div class="stat-box"><span class="val">5×</span><span class="lbl">Better than field average</span></div>
+    <div class="stat-box"><span class="val">5th</span><span class="lbl">K<sub>D</sub> rank of 10 binders</span></div>
+  </div>
+
+  <p>Only 10 designs across all 322 entries have a measured K<sub>D</sub>. Our binder at 185 nM ranks 5th — right at the median of confirmed binders.</p>
+
+  <img class="chart-img" src="https://raw.githubusercontent.com/steamulater/adaptyv-rbx1-binder-design/main/rbx1_kd_comparison_by_author.png" alt="K_D comparison — all 10 confirmed RBX1 binders by author">
+  <p class="img-caption">K<sub>D</sub> of all 10 confirmed binders. Competition values by SPR; ours by BLI.</p>
+
+  <h2>Key Observations</h2>
+  <ul>
+    <li><strong>C-terminal RBX1 surface is the productive epitope.</strong> The PDFA C-terminal binder is the sole hit. Both PDFA N-terminal designs — ranked #1 and #3 by Boltz-2 iptm — showed no binding.</li>
+    <li><strong>Boltz-2 iptm does not predict outcome within a high-scoring cohort.</strong> The highest-iptm design (0.927) failed; the binder (0.918) ranked 2nd computationally.</li>
+    <li><strong>GLMN scaffold redesign did not translate.</strong> Strong scores and near-native ring RMSD (&lt;1 Å) did not produce binding — large flat interfaces may require near-native sequence identity.</li>
+    <li><strong>De novo miniprotein (70 aa) did not bind.</strong> Lowest peak BLI response suggests poor expression or folding under assay conditions.</li>
+  </ul>
+
+  <h2>Next Steps</h2>
+  <ul>
+    <li>Affinity maturation of <code>PDFA_Cterm_s252595_mpnn10</code> (185 nM → target &lt;25 nM)</li>
+    <li>Focus next design round on C-terminal RBX1 surface using BindCraft + BoltzGen (PDFA pipeline validated)</li>
+    <li>Request raw loading step traces from Adaptyv for expression QC on all 7 designs</li>
+    <li>Contact PDFA re: co-authorship if manuscript pursued</li>
+  </ul>
+
+  <hr>
+
+  <h2>References</h2>
+  <table class="ref-table">
+    <tr><th>Document</th><th>Location</th></tr>
+    <tr><td>Full lab notebook (Entries 001–017)</td><td><code>lab_notebook.md</code> — steamulater/adaptyv-rbx1-binder-design</td></tr>
+    <tr><td>Submission writeup</td><td><code>submission_writeup.md</code></td></tr>
+    <tr><td>PDFA method writeup</td><td><code>students_submission/Protein design for africa, method write up.pdf</code></td></tr>
+    <tr><td>Boltz-2 PDFA standardisation notebook</td><td><code>students_submission/boltz_pdfa_validation.ipynb</code></td></tr>
+    <tr><td>BLI raw data package</td><td>Adaptyv Foundry experiment SUL-001-002</td></tr>
+    <tr><td>Proteinbase RBX1 competition dataset</td><td>proteinbase_collection_gem-x-adaptyv-rbx1-binder-design-competition-results.csv</td></tr>
+  </table>
+
+</div>
