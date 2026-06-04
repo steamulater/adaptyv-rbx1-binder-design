@@ -117,7 +117,9 @@ Our binder ranks **5th of 10** (median of the confirmed binders). The competitio
 
 Note: competition KD values were measured by SPR; ours by BLI — direct numerical comparison should be interpreted with that assay difference in mind.
 
-![K_D comparison — all 10 confirmed RBX1 binders](rbx1_kd_comparison.png)
+![K_D comparison — all 10 confirmed RBX1 binders, by design name](rbx1_kd_comparison.png)
+
+![K_D comparison — all 10 confirmed RBX1 binders, by author](rbx1_kd_comparison_by_author.png)
 
 #### Computational metrics
 
