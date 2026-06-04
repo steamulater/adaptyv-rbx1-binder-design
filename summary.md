@@ -78,15 +78,6 @@ Of 322 entries, only 10 have a measured K_D. Our binder ranks **5th** (median of
 
 ---
 
-## Next Steps
-
-1. **Affinity maturation** of `PDFA_Cterm_s252595_mpnn10` (185 nM → target <25 nM, the competition best)
-2. **Focus next design round on C-terminal RBX1 surface** using BindCraft + BoltzGen pipeline (PDFA approach validated)
-3. **Request loading step traces** from Adaptyv Foundry for expression QC on all 7 designs
-4. **Contact PDFA** (Oghenejabor Laurence Jaboro, Mcgregory Nosakhare Ogbomo) re: co-authorship if manuscript pursued
-
----
-
 ## References
 
 ### Methods
