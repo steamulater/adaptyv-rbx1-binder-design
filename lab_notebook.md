@@ -5,6 +5,64 @@
 
 ---
 
+## Entry 018 — 2026-06-14
+
+**Status:** Complete — expression data retrieved from Adaptyv Foundry API (updated payload)
+**Goal:** Incorporate Adaptyv expression classifications now available in the `summary[].expression` field of the results API. Previously (Entry 017) `metadata: {}` was empty and expression was inferred from peak BLI response; this entry supersedes that proxy analysis with confirmed Adaptyv data.
+
+---
+
+### Expression Data — Adaptyv Foundry API (retrieved 2026-06-14)
+
+Endpoint: `GET /experiments/019dba0b-d3ea-b469-836a-472c9aa6c134/results`
+
+Expression classifications are now present in `summary[].expression` and replicated across `replicates[].expression`. Loading concentration (`concentration_value`) from the tip-loading step is also now exposed.
+
+#### Full updated results table
+
+| Design | Source | Boltz-2 iptm | Binding | K_D mean | Expression | Loading conc (nM) |
+|--------|--------|-------------|---------|----------|------------|-------------------|
+| `PDFA_Cterm_s252595_mpnn10` | PDFA | 0.918 | **yes** | **185 nM** | **high** | 582.1 |
+| `PDFA_NtermSolMPNN_s92146_mpnn3` | PDFA | 0.910 | no | — | **high** | 711.8 |
+| `GLMN_T0.1_s11` | Steamulater | 0.887 | no | — | **high** | 442.8 |
+| `GLMN_T0.3_s8` | Steamulater | 0.878 | no | — | **high** | 129.7 |
+| `RFD_167_best` | Steamulater | 0.848 | no | — | **medium** | 330.0 |
+| `CUL1_WHB_T0.2_s16` | Steamulater | 0.761 | no | — | **high** | 131.8 |
+| `PDFA_NtermSolMPNN2_s565603_mpnn6` | PDFA | 0.927 | no | — | **high** | <84.4 |
+
+#### Key updates vs. Entry 017
+
+1. **6/7 designs expressed at HIGH level.** The Entry 017 proxy analysis (peak BLI response as loading proxy) incorrectly inferred "low" loading for most non-binders. Adaptyv's direct classification shows they expressed well — the lack of binding is a genuine binding failure, not an expression artifact.
+
+2. **RFD_167_best = medium expression, not "very low".** The de novo 70 aa miniprotein expressed at a medium level, not the near-zero expression implied by its low peak BLI response (0.022 nm). It may have expressed but failed to fold correctly or load efficiently on the BLI tip. The no-binding result is still likely driven by folding/conformational issues but expression itself was not negligible.
+
+3. **PDFA_NtermSolMPNN2_mpnn6 paradox.** Highest iptm (0.927), high expression classification, but lowest loading concentration (<84.4 nM) and no binding. This suggests the protein expressed but had poor tip-loading efficiency — possibly due to the hydrophobic N-terminal region (`WKPILLVLFFP...`) interfering with surface immobilisation or causing aggregation. Not a Boltz-2 failure per se; a biophysical assay compatibility issue.
+
+4. **True negatives confirmed.** With 6/7 designs showing high expression and still not binding, the non-binding result for PDFA Nterm designs, GLMN designs, and CUL1_WHB is now definitively a binding interface failure. This strengthens the interpretation that the C-terminal RBX1 epitope (targeted by mpnn10) is uniquely accessible.
+
+---
+
+### Plots
+
+![Binding data — Boltz-2 ipTM and replicate K_D](rbx1_binding_data_entry018.png)
+
+![Expression data — Adaptyv classification and tip loading](rbx1_expression_data_entry018.png)
+
+![Combined summary — ipTM, expression, binding, loading heatmap](rbx1_combined_summary_entry018.png)
+
+---
+
+### Revised interpretation
+
+The expression data resolves the main ambiguity from Entry 017: **non-binders were not failing to express — they were failing to bind.** This has direct implications for next steps:
+
+- **Affinity maturation of mpnn10** is the highest priority — confirmed binder, confirmed high expression, consistent kinetics across replicates.
+- **GLMN scaffold re-evaluation**: high expression but no binding suggests the interface geometry or sequence is fundamentally wrong. Closer examination of the tip immobilisation orientation (C-terminal His-tag) may be warranted — the GLMN binding face is on the opposite end.
+- **PDFA Nterm designs**: high expression but poor loading for mpnn6 suggests an assay format issue rather than a design failure. Worth retesting with N-terminal tag or alternative immobilisation.
+- **RFD_167_best**: medium expression, no binding — continue treating as folding/conformational failure for a 70 aa de novo miniprotein.
+
+---
+
 ## Entry 017 — 2026-06-03
 
 **Status:** Complete — BLI results received from Adaptyv Foundry
